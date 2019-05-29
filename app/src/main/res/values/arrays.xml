@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="switch_tabs">
+        <item>Patients Sign Up</item>
+        <item>Doctors Sign Up</item>
+    </string-array>
+    <string-array name="switch_country">
+        <item>World</item>
+        <item>China</item>
+    </string-array>
+
+    <string-array name="switch_yn">
+        <item>Disable</item>
+        <item>Enable</item>
+    </string-array>
+
+    <string-array name="availableTimes">
+
+        <item>0600</item>
+        <item>0700</item>
+        <item>0800</item>
+        <item>0900</item>
+        <item>1000</item>
+        <item>1100</item>
+        <item>1200</item>
+        <item>1300</item>
+        <item>1400</item>
+        <item>1500</item>
+        <item>1600</item>
+        <item>1700</item>
+        <item>1800</item>
+
+
+
+    </string-array>
+    <string-array name="symptoms">
+        <item>Headache</item>
+        <item>Stomachache</item>
+        <item>allergies</item>
+        <item>Diarrhoea</item>
+        <item>Vomiting</item>
+        <item>Dizziness</item>
+        <item>Backaches</item>
+        <item>fever</item>
+
+
+        <item>Coughs</item>
+        <item>Asthma</item>
+
+
+    </string-array>
+</resources>

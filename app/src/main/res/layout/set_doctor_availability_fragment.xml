@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_bg"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:background="@drawable/ic_doc_pic_sched"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="130dp"
+            android:layout_marginTop="30dp"
+            android:text="Hello, Dr Doc"
+            android:textColor="#747474"
+            android:textSize="18sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="130dp"
+            android:layout_marginTop="10dp"
+            android:text="Please select the days you will be available."
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+    <!--<com.github.badoualy.datepicker.DatePickerTimeline-->
+        <!--android:id="@+id/timeline"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--app:mti_bgLblDateSelectedColor="@color/colorPrimary"-->
+        <!--app:mti_bgLblTodayColor="@color/colorAccent" />-->
+    <com.nex3z.togglebuttongroup.SingleSelectToggleGroup
+        android:id="@+id/group_days"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tbgChildSpacing="auto"
+        app:tbgCheckedButton="@+id/choice_Mon">
+
+        <com.nex3z.togglebuttongroup.button.CircularToggle
+            android:id="@+id/choice_Sun"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SUN"/>
+
+        <com.nex3z.togglebuttongroup.button.CircularToggle
+            android:id="@+id/choice_Mon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MON"/>
+        <com.nex3z.togglebuttongroup.button.CircularToggle
+            android:id="@+id/choice_Tue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TUE"/>
+        <com.nex3z.togglebuttongroup.button.CircularToggle
+            android:id="@+id/choice_Wed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="WED"/>
+        <com.nex3z.togglebuttongroup.button.CircularToggle
+            android:id="@+id/choice_Thur"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="THUR"/>
+        <com.nex3z.togglebuttongroup.button.CircularToggle
+            android:id="@+id/choice_Fri"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="FRI"/>
+        <com.nex3z.togglebuttongroup.button.CircularToggle
+            android:id="@+id/choice_Sat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SAT"/>
+
+
+    </com.nex3z.togglebuttongroup.SingleSelectToggleGroup>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorWhite">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="20dp"
+                android:text="Select Availability Time"
+                android:textAlignment="center"
+                android:textColor="#818181" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+
+
+
+            <com.nex3z.togglebuttongroup.MultiSelectToggleGroup
+                android:id="@+id/group_appointment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:tbgChildSpacing="auto"
+                app:tbgChildSpacingForLastRow="align"
+                app:tbgRowSpacing="8dp">
+
+            </com.nex3z.togglebuttongroup.MultiSelectToggleGroup>
+            <!--<com.nex3z.togglebuttongroup.SingleSelectToggleGroup-->
+            <!--android:id="@+id/group_select_appointment_hours"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:outlineAmbientShadowColor="@color/colorPrimary"-->
+            <!--android:outlineSpotShadowColor="@color/colorPrimary"-->
+            <!--app:tbgChildSpacing="auto"-->
+            <!--app:tbgChildSpacingForLastRow="align"-->
+            <!--app:tbgRowSpacing="8dp">-->
+
+            <!--</com.nex3z.togglebuttongroup.SingleSelectToggleGroup>-->
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/submit_availability"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/button"
+            android:elevation="10dp"
+            android:text="SUBMIT AVAILABILITY"
+            android:textColor="@color/colorPrimary" />
+    </LinearLayout>
+
+
+</LinearLayout>

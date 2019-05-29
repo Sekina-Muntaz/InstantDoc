@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="10dp">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profile_image"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        app:civ_border_width="1dp"
+        app:civ_border_color="@color/colorWhite"
+        />
+
+
+
+
+    <TextView
+        android:layout_toRightOf="@+id/profile_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="15dp"
+        android:id="@+id/doctor_username"
+        android:textStyle="bold"
+        android:text="sdxfcccff"
+        />
+
+
+    <TextView
+        android:layout_toRightOf="@+id/profile_image"
+        android:layout_below="@+id/doctor_username"
+        android:layout_toEndOf="@+id/profile_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="15dp"
+        android:id="@+id/doctor_specialization"
+        android:textStyle="bold"
+        />
+    <TextView
+        android:layout_toRightOf="@+id/profile_image"
+        android:layout_below="@+id/doctor_specialization"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="15dp"
+        android:layout_centerVertical="true"
+        android:id="@+id/doctor_availability"
+        android:textStyle="bold"
+        />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:visibility="gone"
+        android:id="@+id/status_online"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        app:civ_border_width="10dp"
+        app:civ_border_color="#05df29"
+
+
+
+        android:src="@mipmap/ic_launcher"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="20dp"
+        />
+
+
+
+</RelativeLayout>
