@@ -2,6 +2,7 @@ package com.instant.doctor.fragments.Doctor;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -66,6 +67,7 @@ public class DoctorPersonalInfoFragment extends Fragment {
     private Button btn_save;
     private String imageURL;
     private String imagePath;
+    private ProgressDialog progressDialog;
 
 
     @Nullable
@@ -82,6 +84,12 @@ public class DoctorPersonalInfoFragment extends Fragment {
 //        setSupportActionBar(toolbar);
 //        getSupportActionBar().setTitle("Personal Information");
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
+        progressDialog=new ProgressDialog(getActivity());
+        progressDialog.setMessage("Saving...");
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
 
         et_name = view.findViewById(R.id.name);
         et_specialization = view.findViewById(R.id.specialization);
@@ -124,6 +132,7 @@ public class DoctorPersonalInfoFragment extends Fragment {
         btn_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progressDialog.show();
                 String doc_name = et_name.getText().toString();
                 String doc_specialization = et_specialization.getText().toString();
                 String doc_service_no = et_serviceNo.getText().toString();
@@ -319,6 +328,7 @@ public class DoctorPersonalInfoFragment extends Fragment {
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
+                        progressDialog.dismiss();
                         String documentId = documentReference.getId();
                         SharedPreferences sharedPref = getActivity().getSharedPreferences("my_prefs", 0);
                         SharedPreferences.Editor editor = sharedPref.edit();

@@ -1,5 +1,6 @@
 package com.instant.doctor.fragments.Patient;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -46,6 +47,7 @@ public class SymptomsFragment extends Fragment {
     private Button button;
     private String doctorId;
     private String doctorName;
+    private ProgressDialog progressDialog;
 
     private DoctorInfo mDoctorInfo;
 
@@ -76,12 +78,19 @@ public class SymptomsFragment extends Fragment {
 //        getSupportActionBar().setTitle("");
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+
+        progressDialog=new ProgressDialog(getActivity());
+        progressDialog.setMessage("Saving...");
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
+
         et_specialConditions = view.findViewById(R.id.specialCondition);
 
         button = view.findViewById(R.id.symptoms_button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progressDialog.show();
                 savePatientSymptoms();
 
             }
@@ -125,6 +134,7 @@ public class SymptomsFragment extends Fragment {
         db.collection("Symptoms").add(patientSymptoms).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
             @Override
             public void onSuccess(DocumentReference documentReference) {
+                progressDialog.dismiss();
 
                 Toast.makeText(getActivity(), "information saved Successfully ", Toast.LENGTH_SHORT).show();
 

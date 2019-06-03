@@ -50,6 +50,7 @@ public class DisplayPatientFragment extends Fragment implements PatientAdapter.O
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        getActivity().setTitle("Patients");
 
 
         recyclerView = view.findViewById(R.id.patient_recyclerView);
@@ -69,7 +70,7 @@ public class DisplayPatientFragment extends Fragment implements PatientAdapter.O
         String doctorId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         progressDialog=new ProgressDialog(getActivity());
-        progressDialog.setTitle("Loading ...");
+        progressDialog.setMessage("Loading ...");
         progressDialog.setIndeterminate(true);
         progressDialog.setCancelable(false);
         progressDialog.show();

@@ -69,7 +69,7 @@ public class LoginFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
 
         progressDialog=new ProgressDialog(getActivity());
-        progressDialog.setTitle("Signing In..");
+        progressDialog.setMessage("Signing In...");
         progressDialog.setIndeterminate(true);
         progressDialog.setCancelable(false);
 

@@ -38,6 +38,7 @@ public class DisplayDoctorsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        getActivity().setTitle("Doctors");
 
 
         recyclerView = view.findViewById(R.id.doctor_recyclerView);

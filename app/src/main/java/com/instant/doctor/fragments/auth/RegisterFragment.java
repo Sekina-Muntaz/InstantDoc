@@ -54,7 +54,7 @@ public class RegisterFragment extends Fragment {
 
         progressDialog=new ProgressDialog(getActivity());
         progressDialog.setIndeterminate(true);
-        progressDialog.setTitle("Please Wait..");
+        progressDialog.setMessage("Please Wait..");
         progressDialog.setCancelable(false);
 //        progressDialog.setIndeterminate();
 

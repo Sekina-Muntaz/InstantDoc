@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -20,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -73,6 +75,7 @@ public class PatientPersonalInfoFragment extends Fragment {
     private String imageURL;
     private TextView patientDOB;
     private RadioButton genderRadioButton;
+    private ProgressDialog progressDialog;
 
 
     private String imagePath;
@@ -87,6 +90,12 @@ public class PatientPersonalInfoFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+
+        progressDialog=new ProgressDialog(getActivity());
+        progressDialog.setMessage("Saving...");
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
 
 
         nameEditText = view.findViewById(R.id.name);
@@ -111,6 +120,7 @@ public class PatientPersonalInfoFragment extends Fragment {
         btn_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progressDialog.show();
                 savePatientInfo();
             }
         });
@@ -356,6 +366,7 @@ public class PatientPersonalInfoFragment extends Fragment {
                 .set(patientInfo).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
+                progressDialog.dismiss();
                 Toast.makeText(getActivity(),
                         "Info saved successfully", Toast.LENGTH_LONG).show();
 
