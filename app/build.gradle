@@ -31,8 +31,8 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:1.1.2'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0-beta01'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
-    implementation 'com.google.firebase:firebase-auth:16.2.0'
-    implementation 'com.google.firebase:firebase-core:16.0.8'
+    implementation 'com.google.firebase:firebase-auth:17.0.0'
+    implementation 'com.google.firebase:firebase-core:16.0.9'
     implementation 'com.google.firebase:firebase-database:16.1.0'
     implementation 'com.google.firebase:firebase-firestore:18.2.0'
     testImplementation 'junit:junit:4.12'
@@ -78,6 +78,9 @@ dependencies {
 
     implementation 'com.nabinbhandari.android:permissions:3.8'
 
+    implementation 'com.squareup.retrofit2:retrofit:2.5.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
 
+    implementation 'com.google.firebase:firebase-messaging:18.0.0'
 
 }

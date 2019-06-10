@@ -42,10 +42,12 @@ import com.instant.doctor.fragments.DatePickerFragment;
 import com.instant.doctor.fragments.Doctor.DisplayPatientFragment;
 import com.instant.doctor.fragments.Doctor.SetDoctorAvailabilityFragment;
 import com.instant.doctor.fragments.SelectDatePicker;
+import com.instant.doctor.fragments.WorkingDatePickerFragment;
 import com.instant.doctor.models.PatientInfo;
 import com.instant.doctor.utils.UserTypePrefManager;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -84,15 +86,15 @@ public class PatientPersonalInfoFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.patient_personal_info_fragment,container,false);
+        return inflater.inflate(R.layout.patient_personal_info_fragment, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        getActivity().setTitle("Personal Information");
 
-
-        progressDialog=new ProgressDialog(getActivity());
+        progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMessage("Saving...");
         progressDialog.setIndeterminate(true);
         progressDialog.setCancelable(false);
@@ -108,11 +110,17 @@ public class PatientPersonalInfoFragment extends Fragment {
         dobTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                WorkingDatePickerFragment newFragment = new WorkingDatePickerFragment();
+//                Bundle bundle=new Bundle();
+//                bundle.putInt("noOfDays",minDate);
+//                newFragment.setArguments(bundle);
+                newFragment.setCallBack(ondate);
 
-                DialogFragment dialogFragment=new SelectDatePicker();
-                dialogFragment.show(getActivity().getSupportFragmentManager(),"Date");
+                newFragment.show(getFragmentManager(), "datePicker");
+//                DialogFragment dialogFragment=new SelectDatePicker();
+//                dialogFragment.show(getActivity().getSupportFragmentManager(),"Date");
 
-                setDate();
+//                setDate();
 
             }
         });
@@ -126,15 +134,14 @@ public class PatientPersonalInfoFragment extends Fragment {
         });
 
 
-
-        genderRadioGroup =  view.findViewById(R.id.radioGender);
+        genderRadioGroup = view.findViewById(R.id.radioGender);
 
         genderRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                int SelectedId=genderRadioGroup.getCheckedRadioButtonId();
-                genderRadioButton=view.findViewById(SelectedId);
-                mGender =genderRadioButton.getText().toString();
+                int SelectedId = genderRadioGroup.getCheckedRadioButtonId();
+                genderRadioButton = view.findViewById(SelectedId);
+                mGender = genderRadioButton.getText().toString();
             }
         });
 
@@ -212,7 +219,7 @@ public class PatientPersonalInfoFragment extends Fragment {
                 imagePath = path;
 //                Toast.makeText(PatientPersonalInfoActivity.this, "Anything "+path, Toast.LENGTH_LONG).show();
 
-                Log.i(TAG, "uploaded image path: "+path);
+                Log.i(TAG, "uploaded image path: " + path);
 
 //                uploadImageToStorage(path);
 
@@ -234,7 +241,7 @@ public class PatientPersonalInfoFragment extends Fragment {
         Uri file = Uri.fromFile(new File(path));
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
-        final StorageReference imgRef = storageRef.child("images/"+file.getLastPathSegment());
+        final StorageReference imgRef = storageRef.child("images/" + file.getLastPathSegment());
         UploadTask uploadTask = imgRef.putFile(file);
 
 // Register observers to listen for when the download is done or if it fails
@@ -253,7 +260,7 @@ public class PatientPersonalInfoFragment extends Fragment {
             public void onComplete(@NonNull Task<Uri> task) {
                 if (task.isSuccessful()) {
                     Uri downloadUri = task.getResult();
-                    imageURL =downloadUri.toString();
+                    imageURL = downloadUri.toString();
                     Log.d(TAG, "image url " + imageURL);
 
                     setPic(path);
@@ -272,7 +279,7 @@ public class PatientPersonalInfoFragment extends Fragment {
     private String getPathFromUri(Uri selectedImageUri) {
         String res = null;
         String[] proj = {MediaStore.Images.Media.DATA};
-        Cursor cursor =getActivity(). getContentResolver()
+        Cursor cursor = getActivity().getContentResolver()
                 .query(selectedImageUri, proj, null, null, null);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
@@ -316,10 +323,8 @@ public class PatientPersonalInfoFragment extends Fragment {
     }
 
 
-
-
-    private void setDate(){
-        PatientPersonalInfoActivity activity = (PatientPersonalInfoActivity)getActivity();
+    private void setDate() {
+        PatientPersonalInfoActivity activity = (PatientPersonalInfoActivity) getActivity();
         mDate = activity.getDateResult();
 
         Date date = new Date(mDate);
@@ -328,9 +333,9 @@ public class PatientPersonalInfoFragment extends Fragment {
         c.setTime(date);
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
-        int day =    c.get(Calendar.DAY_OF_MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
 
-        String dateString = day + " / " + (month+1) + " / " + year;
+        String dateString = day + " / " + (month + 1) + " / " + year;
         dobTextView.setText(dateString);
 
     }
@@ -340,13 +345,13 @@ public class PatientPersonalInfoFragment extends Fragment {
         final String name = nameEditText.getText().toString();
 //        String gender = genderTextView.getText().toString();
         String phoneNo = phoneNoEditText.getText().toString();
-        String gender= mGender;
+        String gender = mGender;
 
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         String id = mAuth.getCurrentUser().getUid();
         String email = mAuth.getCurrentUser().getEmail();
-        String image=imageURL;
+        String image = imageURL;
 
         if (!isValidPhoneNumber(phoneNo)) {
             Toast.makeText(getActivity(), "Enter a valid phone Number", Toast.LENGTH_SHORT).show();
@@ -355,8 +360,6 @@ public class PatientPersonalInfoFragment extends Fragment {
 
 
         }
-
-
 
 
         PatientInfo patientInfo = new PatientInfo(name, mDate, gender, phoneNo, email, id, image);
@@ -376,6 +379,7 @@ public class PatientPersonalInfoFragment extends Fragment {
 //                fragmentTransaction.replace(R.id.doc_info_frame, new DisplayDoctorsFragment());
 
                 Intent intent = new Intent(getActivity(), MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }
         });
@@ -403,9 +407,26 @@ public class PatientPersonalInfoFragment extends Fragment {
         return true;
     }
 
+    DatePickerDialog.OnDateSetListener ondate = new DatePickerDialog.OnDateSetListener() {
+
+        public void onDateSet(DatePicker view, int year, int monthOfYear,
+                              int dayOfMonth) {
 
 
+            String dateString = dayOfMonth + " / " + (monthOfYear + 1) + " / " + year;
+            dobTextView.setText(dateConverter(dayOfMonth, monthOfYear, year));
+//            startDateBtn.setText(dateConverter(dayOfMonth,monthOfYear,year));
 
+        }
+    };
+
+    public String dateConverter(int day, int month, int year) {
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("dd-MM-yyyy");
+//        SimpleDateFormat dateFormatter=new SimpleDateFormat("dd-MM-yyyy");
+        Date d = new Date(year - 1900, month, day);
+        return dateFormatter.format(d);
+
+    }
 
 }
 

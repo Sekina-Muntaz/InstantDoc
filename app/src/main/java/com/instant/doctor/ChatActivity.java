@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -30,23 +29,26 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.instant.doctor.Adapters.ChatAdapter;
 import com.instant.doctor.fragments.Doctor.PrescriptionDiagnosisFragment;
 import com.instant.doctor.models.Chat;
 import com.instant.doctor.models.DoctorInfo;
 import com.instant.doctor.models.Message;
 import com.instant.doctor.models.PatientInfo;
+import com.instant.doctor.notifications.APIService;
+import com.instant.doctor.notifications.Client;
+import com.instant.doctor.notifications.Data;
+import com.instant.doctor.notifications.MyResponse;
+import com.instant.doctor.notifications.Sender;
+import com.instant.doctor.notifications.Token;
 import com.instant.doctor.utils.UserTypePrefManager;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -57,6 +59,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ChatActivity extends AppCompatActivity {
     private static final String TAG = ChatActivity.class.getSimpleName();
@@ -80,6 +85,10 @@ public class ChatActivity extends AppCompatActivity {
     DoctorInfo doctorInfo;
     LinearLayoutManager layoutManager;
 
+    APIService apiService;
+    boolean notify = false;
+    boolean senderIsPatient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,10 +106,15 @@ public class ChatActivity extends AppCompatActivity {
             receiverId = getIntent().getStringExtra("receiver-id");
         }
 
+        apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
+
         profile_image = findViewById(R.id.profile_image);
         user_name = findViewById(R.id.username);
         button_send = findViewById(R.id.button_send);
         button_attach = findViewById(R.id.button_attach);
+        if(senderIsPatient){
+            button_attach.setVisibility(View.GONE);
+        }
 
         send_edit_text = findViewById(R.id.edit_text_send);
 
@@ -115,6 +129,8 @@ public class ChatActivity extends AppCompatActivity {
         initConversation();
 
         setProfilePic();
+
+        updateToken(FirebaseInstanceId.getInstance().getToken());
 
         RecyclerView recyclerView = findViewById(R.id.chat_recyclerview);
         chatAdapter = new ChatAdapter(this);
@@ -132,6 +148,7 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String message = send_edit_text.getText().toString();
+                notify = true;
 
                 if (message.trim().isEmpty()) {
                     Toast.makeText(ChatActivity.this, "You cant send an empty message", Toast.LENGTH_SHORT).show();
@@ -160,7 +177,7 @@ public class ChatActivity extends AppCompatActivity {
 //                newFragment.show(transaction, "Prescription");
 
 
-              transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 // To make it fullscreen, use the 'content' root view as the container
                 // for the fragment, which is always the root view for the activity
                 transaction.add(android.R.id.content, newFragment)
@@ -169,6 +186,13 @@ public class ChatActivity extends AppCompatActivity {
         });
 
 
+    }
+
+
+    private void updateToken(String token) {
+        Token token1 = new Token(token, senderId);
+        db.collection("tokens").document()
+                .set(token1);
     }
 
     private void fetchMessages() {
@@ -281,6 +305,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private void saveMessage(String message) {
         Message message1 = new Message(chatId, senderId, receiverId, message, new Date().getTime());
+
         db.collection("chats")
                 .document(medicalSessionId)
                 .update("messages", FieldValue.arrayUnion(message1))
@@ -298,6 +323,55 @@ public class ChatActivity extends AppCompatActivity {
                     }
                 });
 
+
+        String senderUserName = senderIsPatient ? patientInfo.getName() : doctorInfo.getName();
+        if (notify) {
+            sendNotification(receiverId, senderUserName, message);
+        }
+        notify = false;
+
+    }
+
+    private void sendNotification(String receiver, String username, String message) {
+
+        db.collection("tokens").whereEqualTo("userId", receiver)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
+                            Token token = snapshot.toObject(Token.class);
+                            Data data = new Data(senderId, medicalSessionId,
+                                        R.mipmap.ic_launcher, username + "\n" + message,
+                                    "New Message", receiver);
+                            Sender sender = new Sender(data, token.getToken());
+
+                            apiService.sendNotication(sender).enqueue(new Callback<MyResponse>() {
+                                @Override
+                                public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                                    if (response.code() == 200) {
+                                        if (response.body().success != 1) {
+                                            Toast.makeText(ChatActivity.this, "Failed", Toast.LENGTH_LONG).show();
+
+                                        }
+                                    }
+
+                                 //   Toast.makeText(ChatActivity.this, "Notification send", Toast.LENGTH_LONG).show();
+
+
+
+                                }
+
+                                @Override
+                                public void onFailure(Call<MyResponse> call, Throwable t) {
+
+                                }
+                            });
+
+                        }
+
+                    }
+                });
     }
 
 
@@ -307,20 +381,22 @@ public class ChatActivity extends AppCompatActivity {
         Log.d(TAG, "setProfilePic: Called");
         if (userTypePrefManager.getUserType() == (0)) {
             //current auth user is patient
+            senderIsPatient = true;
+
             db.collection("doctors").whereEqualTo("id", receiverId).limit(1).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
 
-                    Log.d(TAG, "doctor sd profile: "+ task.getResult().size());
+                    Log.d(TAG, "doctor sd profile: " + task.getResult().size());
 
                     if (task.isSuccessful()) {
 
                         for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
 
-                             doctorInfo = queryDocumentSnapshot.toObject(DoctorInfo.class);
+                            doctorInfo = queryDocumentSnapshot.toObject(DoctorInfo.class);
 
-                            Log.d(TAG, " doctor profile: "+ doctorInfo);
+                            Log.d(TAG, " doctor profile: " + doctorInfo);
 
                             user_name.setText(doctorInfo.getName());
                             if (doctorInfo.getImageURL() == null) {
@@ -336,23 +412,52 @@ public class ChatActivity extends AppCompatActivity {
                 }
             });
 
+            db.collection("patients").whereEqualTo("id", senderId)
+                    .limit(1).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    Log.d(TAG, "patient sd profile: " + task.getResult().size());
+
+
+                    if (task.isSuccessful()) {
+
+
+                        for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
+
+                            patientInfo = queryDocumentSnapshot.toObject(PatientInfo.class);
+                            break;
+
+
+
+                        }
+
+                    }
+                }
+            });
+
+
+
+
         } else {
 
             //current auth user is doctor
+            senderIsPatient = false;
+
             db.collection("patients").whereEqualTo("id", receiverId)
                     .limit(1).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    Log.d(TAG, "patient sd profile: "+ task.getResult().size());
+                    Log.d(TAG, "patient sd profile: " + task.getResult().size());
 
 
                     if (task.isSuccessful()) {
+
 
                         for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
 
                             patientInfo = queryDocumentSnapshot.toObject(PatientInfo.class);
 
-                            Log.d(TAG, " patient profile: "+ patientInfo);
+                            Log.d(TAG, " patient profile: " + patientInfo);
 
                             user_name.setText(patientInfo.getName());
                             if (patientInfo.getImageURL() == null) {
@@ -374,7 +479,7 @@ public class ChatActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
 
-                    Log.d(TAG, "doctor sd profile: "+ task.getResult().size());
+                    Log.d(TAG, "doctor sd profile: " + task.getResult().size());
 
                     if (task.isSuccessful()) {
 
@@ -391,16 +496,14 @@ public class ChatActivity extends AppCompatActivity {
             });
 
 
-
-
-
-
         }
     }
 
     @Override
     public void onBackPressed() {
-        Intent intent=new Intent(this,MainActivity.class);
+        super.onBackPressed();
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
+
     }
 }

@@ -39,7 +39,7 @@ public class RegisterFragment extends Fragment {
 
 
     FirebaseAuth auth;
-    DatabaseReference reference;
+//    DatabaseReference reference;
 
 
     @Nullable
@@ -127,7 +127,7 @@ public class RegisterFragment extends Fragment {
 
                             FragmentTransaction transaction=((Splash) getView().getContext()).getSupportFragmentManager().beginTransaction();
                             transaction.replace(R.id.splash_frame,new UserTypeFragment(),"UserType Fragment").commit();
-                            reference = FirebaseDatabase.getInstance().getReference("Users").child(userId);
+//                            reference = FirebaseDatabase.getInstance().getReference("Users").child(userId);
 
 
 

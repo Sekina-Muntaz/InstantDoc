@@ -1,5 +1,6 @@
 package com.instant.doctor;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -41,6 +42,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
@@ -51,6 +53,8 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = "MainActivity";
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    ProgressDialog progressDialog;
+    UserTypePrefManager userTypePrefManager;
 
 
     private boolean navDrawerItemSelected;
@@ -62,6 +66,13 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Loading...");
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
+
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -71,6 +82,45 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        // set name and email
+
+        View headerView = navigationView.getHeaderView(0);
+//        final TextView nav_user_name = headerView.findViewById(R.id.nav_username);
+//        final TextView nav_email = (TextView) headerView.findViewById(R.id.nav_email);
+
+        //set username and email appropriately
+
+//        if (user!=null){
+//            nav_email.setText();
+//        }
+
+
+        MenuItem chats = navigationView.getMenu().findItem(R.id.nav_chats);
+        MenuItem medicalNotes = navigationView.getMenu().findItem(R.id.nav_medicalNotes);
+        MenuItem docStatistics = navigationView.getMenu().findItem(R.id.nav_statistics);
+//        MenuItem completedJobs = navigationView.getMenu().findItem(R.id.nav_manage);
+
+        UserTypePrefManager userTypePrefManager =new UserTypePrefManager(getApplicationContext());
+        switch (userTypePrefManager.getUserType()) {
+
+            case 0:
+                //patient
+//                nav_email.setText(patientInfo.getEmail());
+//                nav_user_name.setText(patientInfo.getName());
+//                medicalNotes.setVisible(true);
+                docStatistics.setVisible(false);
+                break;
+//
+            case 1:
+                //doctor
+//                nav_email.setText(doctorInfo.getEmail());
+//                nav_user_name.setText(doctorInfo.getName());
+                medicalNotes.setVisible(false);
+//                docStatistics.setVisible(true);
+                break;
+
+
+        }
         Intent intent = getIntent();
         if (intent.hasExtra("beforeChat")) {
             changeFragment(3);
@@ -133,6 +183,7 @@ public class MainActivity extends AppCompatActivity
 //
 //        }
 
+
         navDrawerItemSelected = true;
         final UserTypePrefManager userTypePrefManager = new UserTypePrefManager(this);
         switch (id) {
@@ -149,10 +200,10 @@ public class MainActivity extends AppCompatActivity
                 break;
 
             case R.id.nav_medicalNotes:
-                if (userTypePrefManager.getUserType()==0){
+                if (userTypePrefManager.getUserType() == 0) {
                     changeFragment(5);
 
-                }else{
+                } else {
                     //dummy trial
                     changeFragment(1);
                 }
@@ -180,17 +231,17 @@ public class MainActivity extends AppCompatActivity
     private void updateStatus(String status) {
         UserTypePrefManager userTypePrefManager = new UserTypePrefManager(this);
         int type = userTypePrefManager.getUserType();
-        FirebaseUser user =FirebaseAuth.getInstance().getCurrentUser();
-        if( user != null) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
             if (type == 0) {
                 //patient
                 db.collection("sessions")
-                        .whereEqualTo("patient_id",user.getUid())
+                        .whereEqualTo("patient_id", user.getUid())
                         .get()
                         .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                             @Override
                             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                for (QueryDocumentSnapshot snapshot: queryDocumentSnapshots){
+                                for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
                                     snapshot.getId();
                                 }
                             }
@@ -221,10 +272,11 @@ public class MainActivity extends AppCompatActivity
                 transaction.replace(R.id.content_frame, new DisplayPatientFragment(), "Before Chat Doctor").commit();
                 break;
             case 5:
-                transaction.replace(R.id.content_frame,new DisplayMedicalNotesFragment(),"Medical Notes").commit();
+                transaction.replace(R.id.content_frame, new DisplayMedicalNotesFragment(), "Medical Notes").commit();
         }
 
     }
+
 
     public void checkUserType() {
 
@@ -299,5 +351,7 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
+
+
 }
 
