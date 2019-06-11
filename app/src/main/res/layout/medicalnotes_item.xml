@@ -58,13 +58,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_download_button"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:id="@+id/noMedicalNote"
-        android:layout_height="wrap_content"
-        android:text="No medical Notes Yet!"
-        android:textColor="@color/colorPrimary"
-        android:visibility="gone"/>
+
 
 
 </RelativeLayout>

@@ -16,10 +16,10 @@
             android:id="@+id/nav_statistics"
             android:icon="@drawable/ic_statistics"
             android:title="Patient Statistics" />
-        <!--<item-->
-            <!--android:id="@+id/nav_manage"-->
-            <!--android:icon="@drawable/ic_menu_manage"-->
-            <!--android:title="Tools" />-->
+        <item
+            android:id="@+id/nav_help"
+            android:icon="@drawable/ic_help"
+            android:title="Help" />
     </group>
 
     <!--<item android:title="Communicate">-->

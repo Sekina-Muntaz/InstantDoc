@@ -72,6 +72,7 @@ public class ChatActivity extends AppCompatActivity {
     FirebaseFirestore db;
     ImageButton button_send, button_attach;
     EditText send_edit_text;
+    RecyclerView recyclerView;
 
 
     String medicalSessionId;
@@ -131,8 +132,7 @@ public class ChatActivity extends AppCompatActivity {
         setProfilePic();
 
         updateToken(FirebaseInstanceId.getInstance().getToken());
-
-        RecyclerView recyclerView = findViewById(R.id.chat_recyclerview);
+        recyclerView = findViewById(R.id.chat_recyclerview);
         chatAdapter = new ChatAdapter(this);
         layoutManager = new LinearLayoutManager(this);
         layoutManager.setReverseLayout(false);
@@ -227,6 +227,9 @@ public class ChatActivity extends AppCompatActivity {
 
                         Log.d(TAG, "messages length:" + messages.size());
                         chatAdapter.setMessages(messages);
+                        recyclerView.scrollToPosition(messages.size()-1);
+
+
 
 
                     } else {

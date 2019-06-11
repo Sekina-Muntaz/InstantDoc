@@ -22,12 +22,12 @@ public class MedicalNotesAdapter extends RecyclerView.Adapter<MedicalNotesAdapte
 
     private Context mcontext;
     private List<MedicalNote> medicalNotes;
-    OnPatientSelected mListener;
+    OnDownloadPressed mListener;
 
-    public MedicalNotesAdapter(Context mcontext, List<MedicalNote> medicalNotes) {
+    public MedicalNotesAdapter(Context mcontext, List<MedicalNote> medicalNotes,OnDownloadPressed listener) {
         this.mcontext = mcontext;
         this.medicalNotes = medicalNotes;
-//        mListener = listener;
+        mListener = listener;
     }
 
 
@@ -37,6 +37,12 @@ public class MedicalNotesAdapter extends RecyclerView.Adapter<MedicalNotesAdapte
         holder.sessionNo.setText(notes.getSessionId());
         holder.dateValue.setText(new Date().toString());
         holder.docName.setText(notes.getDoctorName());
+        holder.downloadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.startDownload(notes.getMedicalNoteUrl());
+            }
+        });
 //
 
 
@@ -73,6 +79,7 @@ public class MedicalNotesAdapter extends RecyclerView.Adapter<MedicalNotesAdapte
             dateValue=itemView.findViewById(R.id.dateValue);
             downloadButton=itemView.findViewById(R.id.download);
 
+
         }
 
 //        public void bind(PatientInfo patient){
@@ -81,8 +88,8 @@ public class MedicalNotesAdapter extends RecyclerView.Adapter<MedicalNotesAdapte
     }
 
 
-    public interface OnPatientSelected {
-        void patientSelected(String patientId, String medicalSessionId);
+    public interface OnDownloadPressed{
+        void startDownload(String url);
     }
 }
 

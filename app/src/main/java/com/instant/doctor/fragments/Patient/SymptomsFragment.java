@@ -71,7 +71,7 @@ public class SymptomsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        getActivity().setTitle("Symptoms");
         Toolbar toolbar = view.findViewById(R.id.toolbar2);
 
 //        setSupportActionBar(toolbar);
@@ -142,17 +142,18 @@ public class SymptomsFragment extends Fragment {
                 String symptomsId = documentReference.getId();
                 String patientName = manager.getUserName();
                 long time = new Date().getTime();
+                String paymentId=null;
 
                 MedicalSession session = new MedicalSession(
                         patientId, symptomsId, doctorId, doctorName,
-                        mDoctorInfo.getImageURL(), mDoctorInfo.getSpecialization(), patientName, time);
+                        mDoctorInfo.getImageURL(), mDoctorInfo.getSpecialization(), patientName, time,paymentId);
 
                 createASession(session);
 
 
-                Intent intent = new Intent(getActivity(), MainActivity.class);
-                intent.putExtra("beforeChat", "true");
-                startActivity(intent);
+//                Intent intent = new Intent(getActivity(), MainActivity.class);
+//                intent.putExtra("beforeChat", "true");
+//                startActivity(intent);
 
 
             }
@@ -169,6 +170,16 @@ public class SymptomsFragment extends Fragment {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
                         Toast.makeText(getContext(), "Info saved successfully", Toast.LENGTH_LONG).show();
+                        String documentId=documentReference.getId();
+                        Bundle bundle=new Bundle();
+                        bundle.putString("sessionId",documentId);
+
+
+                        PaymentInstructions paymentInstructions=new PaymentInstructions();
+                        paymentInstructions.setArguments(bundle);
+
+                        FragmentTransaction transaction=getActivity().getSupportFragmentManager().beginTransaction();
+                        transaction.replace(R.id.patient_info_frame,paymentInstructions).commit();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
             @Override

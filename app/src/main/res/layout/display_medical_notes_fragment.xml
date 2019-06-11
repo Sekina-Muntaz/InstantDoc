@@ -13,6 +13,13 @@
         android:id="@+id/display_medical_notes_recyclerView">
 
     </androidx.recyclerview.widget.RecyclerView>
+    <TextView
+        android:layout_width="wrap_content"
+        android:id="@+id/noNote"
+        android:layout_height="wrap_content"
+        android:text="No medical Notes Yet!"
+        android:textColor="@color/colorPrimary"
+        android:visibility="gone"/>
     <!--<TextView-->
         <!--android:id="@+id/tv_nopatient_data"-->
         <!--android:layout_width="match_parent"-->

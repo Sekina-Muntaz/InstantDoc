@@ -5,11 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import android.util.Log;
 import android.view.View;
@@ -17,14 +14,11 @@ import android.view.View;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.instant.doctor.fragments.Doctor.BeforeChatFragmentDoctor;
 import com.instant.doctor.fragments.Doctor.DisplayPatientFragment;
-import com.instant.doctor.fragments.Doctor.DoctorPersonalInfoFragment;
-import com.instant.doctor.fragments.Doctor.SetDoctorAvailabilityFragment;
+import com.instant.doctor.fragments.Doctor.PatientStatisticsFragment;
 import com.instant.doctor.fragments.Patient.BeforeChatFragmentPatient;
 import com.instant.doctor.fragments.Patient.DisplayDoctorsFragment;
 import com.instant.doctor.fragments.Patient.DisplayMedicalNotesFragment;
@@ -42,8 +36,6 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -162,6 +154,12 @@ public class MainActivity extends AppCompatActivity
         return false;
     }
 
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -206,6 +204,10 @@ public class MainActivity extends AppCompatActivity
                 } else {
                     //dummy trial
                     changeFragment(1);
+                }
+            case R.id.nav_statistics:
+                if (userTypePrefManager.getUserType()==1){
+                    changeFragment(6);
                 }
 
         }
@@ -273,6 +275,10 @@ public class MainActivity extends AppCompatActivity
                 break;
             case 5:
                 transaction.replace(R.id.content_frame, new DisplayMedicalNotesFragment(), "Medical Notes").commit();
+                break;
+            case 6:
+                transaction.replace(R.id.content_frame, new PatientStatisticsFragment(), "Patient Statistics").commit();
+            break;
         }
 
     }

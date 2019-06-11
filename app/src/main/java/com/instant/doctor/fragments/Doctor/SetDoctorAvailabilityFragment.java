@@ -17,6 +17,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import com.instant.doctor.DoctorPersonalInfoActivity;
 import com.instant.doctor.MainActivity;
 import com.instant.doctor.R;
 import com.instant.doctor.SetDoctorsAvailabilityActivity;
@@ -63,6 +64,12 @@ public class SetDoctorAvailabilityFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+//        try{
+//            ((DoctorPersonalInfoActivity)getActivity()).getSupportActionBar().setTitle("Availability");
+//        }catch (Exception e){
+//
+//        }
 
         button = view.findViewById(R.id.submit_availability);
         button.setOnClickListener(new View.OnClickListener() {

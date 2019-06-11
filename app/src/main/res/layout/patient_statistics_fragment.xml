@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:background="@drawable/ic_doc_pic_sched"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="130dp"
+            android:layout_marginTop="30dp"
+            android:text="Hello, Dr Doc"
+            android:textColor="#747474"
+            android:textSize="18sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="130dp"
+            android:layout_marginTop="10dp"
+            android:text="Here is the number of patients you have seen today."
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tv_numberOfPatients"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="70dp"
+            android:layout_marginTop="10dp"
+            android:text="Total Patients :"/>
+        <TextView
+            android:id="@+id/actualNumberOfPatients"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="70dp"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@id/tv_numberOfPatients"
+            android:text="cscccccccccccc"
+            />
+        <TextView
+            android:id="@+id/tv_totalAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="70dp"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/tv_numberOfPatients"
+            android:text="Total Amount :"/>
+        <TextView
+            android:id="@+id/actualAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="70dp"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@id/tv_totalAmount"
+            android:layout_below="@+id/actualNumberOfPatients"
+            android:text="cscccccccccccccc"
+            />
+
+    </RelativeLayout>
+
+
+
+
+</LinearLayout>

@@ -28,7 +28,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -44,6 +48,7 @@ import com.nabinbhandari.android.permissions.Permissions;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -58,7 +63,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class DoctorPersonalInfoFragment extends Fragment {
     private static final int PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 60;
     private static final int SELECT_IMAGE = 15;
-    private static final String TAG = "DoctorPersonalInfo" ;
+    private static final String TAG = "DoctorPersonalInfo";
     private EditText et_name;
     private EditText et_specialization;
     private EditText et_serviceNo;
@@ -68,6 +73,8 @@ public class DoctorPersonalInfoFragment extends Fragment {
     private String imageURL;
     private String imagePath;
     private ProgressDialog progressDialog;
+    private ArrayList<DoctorInfo> doctorList = new ArrayList<>();
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
 
     @Nullable
@@ -79,14 +86,12 @@ public class DoctorPersonalInfoFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-//        Toolbar toolbar = findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-//        getSupportActionBar().setTitle("Personal Information");
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//
+//        fetchDoctors();
 
 
-        progressDialog=new ProgressDialog(getActivity());
+
+        progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMessage("Saving...");
         progressDialog.setIndeterminate(true);
         progressDialog.setCancelable(false);
@@ -137,13 +142,39 @@ public class DoctorPersonalInfoFragment extends Fragment {
                 String doc_specialization = et_specialization.getText().toString();
                 String doc_service_no = et_serviceNo.getText().toString();
                 String doc_phone_no = et_phoneNo.getText().toString();
-
                 if (TextUtils.isEmpty(doc_name) | TextUtils.isEmpty(doc_specialization) | TextUtils.isEmpty(doc_service_no) | TextUtils.isEmpty(doc_phone_no)) {
                     Toast.makeText(getActivity(), "All fields must be filled", Toast.LENGTH_SHORT).show();
 
-                } else {
-                    saveDoctorInfo();
+                    return;
                 }
+                db = FirebaseFirestore.getInstance();
+                db.collection("doctors").whereEqualTo("serviceNo", doc_service_no).get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    progressDialog.dismiss();
+
+//                                    for (DocumentSnapshot snapshot : task.getResult()) {
+//                                        String serviceNos=snapshot.getString("serviceNo");
+//                                        if (serviceNos.equals(doc_service_no)) {
+//                                            Toast.makeText(getActivity(), "Enter a correct Number", Toast.LENGTH_SHORT).show();
+//                                        }
+//                                    }
+                                    if(task.getResult().size() == 0 ){
+                                        Log.d(TAG, "User not Exists");
+                                        //You can store new user information here
+                                        saveDoctorInfo();
+
+                                    }else {
+                                        Toast.makeText(getActivity(), "Enter a correct Registration Number", Toast.LENGTH_SHORT).show();
+                                    }
+
+                                }
+
+                            }
+                        });
+
             }
 
 
@@ -156,27 +187,18 @@ public class DoctorPersonalInfoFragment extends Fragment {
         switch (requestCode) {
             case PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE: {
                 // If request is cancelled, the result arrays are empty.
-                if(grantResults[0] == PackageManager.PERMISSION_DENIED){
+                if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
 
                 }
 
                 Toast.makeText(getActivity(), "Please accept this permission to proceed", Toast.LENGTH_LONG).show();
-                Log.d(TAG, "onRequestPermissionsResult: "+ grantResults);
-//                if (grantResults.length > 0
-//                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                    //do something
+                Log.d(TAG, "onRequestPermissionsResult: " + grantResults);
 //
-////                    selectImage();
-//                } else {
-//                    Toast.makeText(getContext(), "Please accept this permission to proceed", Toast.LENGTH_LONG).show();
-//                    getActivity().finish();
-//                }
 
 
             }
 
-            // other 'case' lines to check for other
-            // permissions this app might request.
+
         }
 
 
@@ -192,11 +214,6 @@ public class DoctorPersonalInfoFragment extends Fragment {
                 //get the path from the uri;;
                 final String path = getPathFromUri(selectedImageUri);
                 imagePath = path;
-//                Toast.makeText(PatientPersonalInfoActivity.this, "Anything "+path, Toast.LENGTH_LONG).show();
-
-//                Log.i(TAG, "uploaded image path: "+path);
-
-//                uploadImageToStorage(path);
 
                 setPic(path);
 
@@ -322,7 +339,7 @@ public class DoctorPersonalInfoFragment extends Fragment {
 
         DoctorInfo doctorInfo = new DoctorInfo(id, name, email, phoneNo, specialization, serviceNo, image);
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+//        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         db.collection("doctors").add(doctorInfo)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
@@ -341,10 +358,7 @@ public class DoctorPersonalInfoFragment extends Fragment {
 
                         FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
                         fragmentTransaction.replace(R.id.doc_info_frame, new SetDoctorAvailabilityFragment()).commit();
-//                        FragmentTransaction transaction=((DoctorPersonalInfoActivity)v.getContext()).getSupportFragmentManager().beginTransaction();
-//                        transaction.replace(R.id.doc_info_frame,new SetDoctorAvailabilityFragment(),"Register Fragment").commit();
-
-
+//
                     }
                 });
 
@@ -388,6 +402,43 @@ public class DoctorPersonalInfoFragment extends Fragment {
         }
         return true;
 
+    }
+
+    public void fetchDoctors() {
+
+        String serviceNo = et_serviceNo.getText().toString();
+        db = FirebaseFirestore.getInstance();
+        db.collection("doctors").whereEqualTo("serviceNo", serviceNo).get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+
+                            for (DocumentSnapshot snapshot : task.getResult()) {
+                                String serviceNos=snapshot.getString("serviceNo");
+                                if (serviceNos.equals(serviceNo)) {
+                                    Toast.makeText(getActivity(), "Enter a correct Number", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                        }
+
+                    }
+                });
+//                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+//            @Override
+//            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+//                if (!queryDocumentSnapshots.isEmpty()) {
+//                    List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
+//
+//                    for (DocumentSnapshot d : list) {
+//                        DoctorInfo aDoctor = d.toObject(DoctorInfo.class);
+//                        doctorList.add(aDoctor);
+//                    }
+//                    adapter.notifyDataSetChanged();
+//                }
+//            }
+//        });
     }
 
 

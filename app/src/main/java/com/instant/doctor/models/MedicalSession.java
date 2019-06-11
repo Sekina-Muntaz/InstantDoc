@@ -17,9 +17,10 @@ public class MedicalSession {
     private String doctor_Specialization;
     //    private String medical_note_id;
     private long time;
+    private String paymentId;
 
     public MedicalSession(String patient_id, String symptoms_id, String doctor_id,
-                          String doctor_name, String doctorUrl, String doctorSpecialization, String patientName, long time) {
+                          String doctor_name, String doctorUrl, String doctorSpecialization, String patientName, long time,String paymentId) {
         this.patient_id = patient_id;
         this.symptoms_id = symptoms_id;
         this.doctor_id = doctor_id;
@@ -29,6 +30,7 @@ public class MedicalSession {
         this.doctor_Specialization = doctorSpecialization;
 //        this.medical_note_id = medical_note_id;
         this.time = time;
+        this.paymentId = paymentId;
 
     }
 
@@ -109,7 +111,14 @@ public class MedicalSession {
         this.doctor_Specialization = doctor_Specialization;
     }
 
-//    public String getMedical_note_id() {
+    public String getPaymentId() {
+        return paymentId;
+    }
+
+    public void setPaymentId(String paymentId) {
+        this.paymentId = paymentId;
+    }
+    //    public String getMedical_note_id() {
 ////        return medical_note_id;
 //    }
 //
