@@ -1,5 +1,13 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+
+<LinearLayout android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <include layout="@layout/bar_layout"
+        android:id="@+id/toolbar"
+        />
+<FrameLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/app_bg"
@@ -10,3 +18,4 @@
 
 
 </FrameLayout>
+</LinearLayout>

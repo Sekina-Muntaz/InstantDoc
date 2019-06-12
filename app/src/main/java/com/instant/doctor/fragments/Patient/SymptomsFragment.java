@@ -71,8 +71,8 @@ public class SymptomsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         getActivity().setTitle("Symptoms");
-        Toolbar toolbar = view.findViewById(R.id.toolbar2);
 
 //        setSupportActionBar(toolbar);
 //        getSupportActionBar().setTitle("");

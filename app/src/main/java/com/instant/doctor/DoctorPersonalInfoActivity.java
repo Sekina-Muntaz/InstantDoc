@@ -7,6 +7,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentTransaction;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import android.Manifest;
@@ -72,37 +73,36 @@ public class DoctorPersonalInfoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_doctor_personal_info);
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-            changeFragment( 1);
 
+        changeFragment(1);
 
 
     }
 
-    public void changeFragment(int page){
-        FragmentTransaction transaction=getSupportFragmentManager().beginTransaction();
+    public void changeFragment(int page) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
-        switch (page){
+        switch (page) {
             case 1:
-                transaction.replace(R.id.doc_info_frame,new DoctorPersonalInfoFragment(),"Doc Personal Info Fragment").commit();
+                transaction.replace(R.id.doc_info_frame, new DoctorPersonalInfoFragment(), "Doc Personal Info Fragment").commit();
                 break;
 
 
             case 2:
-                transaction.replace(R.id.doc_info_frame,new SetDoctorAvailabilityFragment(),"Doc Personal Info Fragment").commit();
+                transaction.replace(R.id.doc_info_frame, new SetDoctorAvailabilityFragment(), "Doc Personal Info Fragment").commit();
                 break;
 
             case 3:
-                transaction.replace(R.id.doc_info_frame,new BeforeChatFragmentDoctor(),"Before Doctor Fragment").commit();
+                transaction.replace(R.id.doc_info_frame, new BeforeChatFragmentDoctor(), "Before Doctor Fragment").commit();
                 break;
 
         }
 
     }
 }
-
-
-
 
 
 //        Toolbar toolbar = findViewById(R.id.toolbar);

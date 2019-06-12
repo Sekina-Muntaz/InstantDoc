@@ -49,6 +49,7 @@ import com.nabinbhandari.android.permissions.Permissions;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -86,8 +87,16 @@ public class DoctorPersonalInfoFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        getActivity().setTitle("Personal Information");
+
+//        try{
+//            (((DoctorPersonalInfoActivity)(getActivity())).getSupportActionBar()).setTitle("Personal Information");
+//        }catch (Exception e){
 //
-//        fetchDoctors();
+//        }
+
+
 
 
 

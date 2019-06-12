@@ -53,6 +53,8 @@ public class PaymentInstructions extends Fragment {
         dialog.setCancelable(false);
         dialog.setIndeterminate(true);
 
+        getActivity().setTitle("Payment");
+
         fetchPatientDetails();
 
 
@@ -61,20 +63,20 @@ public class PaymentInstructions extends Fragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                PaymentService service = Client.getClient("http://s")
-//                        .create(PaymentService.class);
-//                Data data = new Data();
-//                service.makePayment(data).enqueue(new Callback<MyResponse>() {
-//                    @Override
-//                    public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onFailure(Call<MyResponse> call, Throwable t) {
-//
-//                    }
-//                });
+                PaymentService service = Client.getClient("http://s")
+                        .create(PaymentService.class);
+                Data data = new Data();
+                service.makePayment(data).enqueue(new Callback<MyResponse>() {
+                    @Override
+                    public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<MyResponse> call, Throwable t) {
+
+                    }
+                });
             }
         });
     }

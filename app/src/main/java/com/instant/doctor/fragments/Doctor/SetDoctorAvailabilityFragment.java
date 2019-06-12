@@ -65,11 +65,9 @@ public class SetDoctorAvailabilityFragment extends Fragment {
     public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-//        try{
-//            ((DoctorPersonalInfoActivity)getActivity()).getSupportActionBar().setTitle("Availability");
-//        }catch (Exception e){
-//
-//        }
+        getActivity().setTitle("Availability");
+
+
 
         button = view.findViewById(R.id.submit_availability);
         button.setOnClickListener(new View.OnClickListener() {

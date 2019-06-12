@@ -10,9 +10,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         >
-        <include layout="@layout/bar_layout"
-            android:id="@+id/toolbar"
-            />
+
 
         <LinearLayout
             android:layout_width="wrap_content"
