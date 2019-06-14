@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -41,9 +42,13 @@ public class DisplayDoctorsFragment extends Fragment {
         getActivity().setTitle("Doctors");
 
 
+
         recyclerView = view.findViewById(R.id.doctor_recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        DividerItemDecoration itemDecor = new DividerItemDecoration(getContext(),DividerItemDecoration.VERTICAL);
+        recyclerView.addItemDecoration(itemDecor);
 
         doctorList = new ArrayList<>();
         adapter = new DoctorAdapter(getActivity(), doctorList);

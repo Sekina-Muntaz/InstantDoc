@@ -41,10 +41,10 @@ public class MedicalHistoryAdapter extends RecyclerView.Adapter<MedicalHistoryAd
     public void onBindViewHolder(@NonNull MedicalHistoryViewHolder holder, int position) {
         final MedicalNote notes= medicalNotes.get(position);
 
-        holder.dateValue.setText(notes.getDiagnosis());
-        holder.docName.setText(new Date().toString());
-        holder.diagnosis.setText(notes.getPrescription());
-        holder.prescription.setText(notes.getDoctorName());
+        holder.docName.setText(notes.getDoctorName());
+        holder.date.setText(new Date().toString());
+        holder.diagnosis.setText(notes.getDiagnosis());
+        holder.prescription.setText(notes.getPrescription());
     }
 
 
@@ -54,10 +54,10 @@ public class MedicalHistoryAdapter extends RecyclerView.Adapter<MedicalHistoryAd
     }
 
     public class MedicalHistoryViewHolder extends RecyclerView.ViewHolder {
-        public TextView prescription;
         public TextView docName;
-        public TextView dateValue;
+        public TextView date;
         public TextView diagnosis;
+        public TextView prescription;
 
 
 
@@ -66,10 +66,10 @@ public class MedicalHistoryAdapter extends RecyclerView.Adapter<MedicalHistoryAd
         public MedicalHistoryViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            prescription = itemView.findViewById(R.id.sessionNo);
-            docName = itemView.findViewById(R.id.docName);
-            dateValue=itemView.findViewById(R.id.dateValue);
-            diagnosis=itemView.findViewById(R.id.prescriptionValue);
+            docName = itemView.findViewById(R.id.docNameValue);
+            date = itemView.findViewById(R.id.dateValue);
+            diagnosis=itemView.findViewById(R.id.diagnosis);
+            prescription=itemView.findViewById(R.id.prescriptionValue);
 
 
 

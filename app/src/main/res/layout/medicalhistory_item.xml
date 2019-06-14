@@ -11,7 +11,7 @@
         android:text="Doctor Name :"
         android:layout_margin="10dp"/>
     <TextView
-        android:id="@+id/sessionNo"
+        android:id="@+id/docNameValue"
         android:layout_toRightOf="@id/session"
         android:layout_marginStart="5dp"
         android:layout_width="wrap_content"
@@ -27,7 +27,7 @@
         android:layout_margin="10dp"/>
 
     <TextView
-        android:id="@+id/docName"
+        android:id="@+id/dateValue"
         android:layout_toRightOf="@id/doc"
         android:layout_marginStart="5dp"
         android:layout_below="@+id/session"
@@ -42,7 +42,7 @@
         android:layout_margin="10dp"
         android:text="Diagnosis :"/>
     <TextView
-        android:id="@+id/dateValue"
+        android:id="@+id/diagnosis"
         android:layout_toRightOf="@id/date"
         android:layout_below="@+id/docName"
         android:layout_marginStart="5dp"
