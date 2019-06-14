@@ -73,7 +73,7 @@ public class PatientStatisticsFragment extends Fragment {
 
     public void totalAmount() {
 
-        int totalAmount =numberOfPatients * 200;
+        int totalAmount =numberOfPatients;
 
 
         tv_totalAmount.setText(String.valueOf(totalAmount));

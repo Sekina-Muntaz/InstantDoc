@@ -8,10 +8,10 @@ public class PatientSymptoms {
     private ArrayList<String> symptoms;
 
 
-    public PatientSymptoms(String specialConditions, ArrayList<String> symptoms,String patientId) {
+    public PatientSymptoms(String specialConditions, ArrayList<String> symptoms, String patientId) {
         this.specialConditions = specialConditions;
         this.symptoms = symptoms;
-        this.patientId=patientId;
+        this.patientId = patientId;
     }
 
     public PatientSymptoms() {

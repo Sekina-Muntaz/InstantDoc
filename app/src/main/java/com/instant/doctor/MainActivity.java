@@ -21,6 +21,7 @@ import com.instant.doctor.fragments.Doctor.DisplayPatientFragment;
 import com.instant.doctor.fragments.Doctor.PatientStatisticsFragment;
 import com.instant.doctor.fragments.Patient.BeforeChatFragmentPatient;
 import com.instant.doctor.fragments.Patient.DisplayDoctorsFragment;
+import com.instant.doctor.fragments.Patient.DisplayMedicalHistoryFragment;
 import com.instant.doctor.fragments.Patient.DisplayMedicalNotesFragment;
 import com.instant.doctor.models.DoctorInfo;
 import com.instant.doctor.models.PatientInfo;
@@ -36,6 +37,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -77,7 +79,10 @@ public class MainActivity extends AppCompatActivity
         // set name and email
 
         View headerView = navigationView.getHeaderView(0);
-//        final TextView nav_user_name = headerView.findViewById(R.id.nav_username);
+        UserTypePrefManager prefManager = new UserTypePrefManager(this);
+
+        final TextView nav_user_name = headerView.findViewById(R.id.nav_username);
+        nav_user_name.setText(prefManager.getUserName());
 //        final TextView nav_email = (TextView) headerView.findViewById(R.id.nav_email);
 
         //set username and email appropriately
@@ -90,7 +95,7 @@ public class MainActivity extends AppCompatActivity
         MenuItem chats = navigationView.getMenu().findItem(R.id.nav_chats);
         MenuItem medicalNotes = navigationView.getMenu().findItem(R.id.nav_medicalNotes);
         MenuItem docStatistics = navigationView.getMenu().findItem(R.id.nav_statistics);
-//        MenuItem completedJobs = navigationView.getMenu().findItem(R.id.nav_manage);
+        MenuItem allDoctors = navigationView.getMenu().findItem(R.id.nav_allDoctors);
 
         UserTypePrefManager userTypePrefManager =new UserTypePrefManager(getApplicationContext());
         switch (userTypePrefManager.getUserType()) {
@@ -108,6 +113,7 @@ public class MainActivity extends AppCompatActivity
 //                nav_email.setText(doctorInfo.getEmail());
 //                nav_user_name.setText(doctorInfo.getName());
                 medicalNotes.setVisible(false);
+                allDoctors.setVisible(false);
 //                docStatistics.setVisible(true);
                 break;
 
@@ -205,10 +211,23 @@ public class MainActivity extends AppCompatActivity
                     //dummy trial
                     changeFragment(1);
                 }
+                break;
             case R.id.nav_statistics:
                 if (userTypePrefManager.getUserType()==1){
                     changeFragment(6);
                 }
+                break;
+            case R.id.nav_allDoctors:
+                if (userTypePrefManager.getUserType()==0){
+                    changeFragment(2);
+                }
+                break;
+
+            case R.id.nav_medicalHistory:
+                if (userTypePrefManager.getUserType()==0){
+                    changeFragment(7);
+                }
+
 
         }
 
@@ -279,6 +298,9 @@ public class MainActivity extends AppCompatActivity
             case 6:
                 transaction.replace(R.id.content_frame, new PatientStatisticsFragment(), "Patient Statistics").commit();
             break;
+            case 7:
+                transaction.replace(R.id.content_frame, new DisplayMedicalHistoryFragment(), "Patient History").commit();
+                break;
         }
 
     }

@@ -74,10 +74,6 @@ public class SymptomsFragment extends Fragment {
 
         getActivity().setTitle("Symptoms");
 
-//        setSupportActionBar(toolbar);
-//        getSupportActionBar().setTitle("");
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
 
         progressDialog=new ProgressDialog(getActivity());
         progressDialog.setMessage("Saving...");
@@ -92,6 +88,7 @@ public class SymptomsFragment extends Fragment {
             public void onClick(View v) {
                 progressDialog.show();
                 savePatientSymptoms();
+
 
             }
         });
@@ -122,6 +119,7 @@ public class SymptomsFragment extends Fragment {
 
     public void savePatientSymptoms() {
         String conditions = et_specialConditions.getText().toString();
+        Toast.makeText(getActivity(),"Your symptoms" +conditions,Toast.LENGTH_LONG).show();
 
         final UserTypePrefManager manager = new UserTypePrefManager(getActivity());
         String patientId = FirebaseAuth.getInstance().getCurrentUser().getUid();

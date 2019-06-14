@@ -75,4 +75,17 @@ public class MedicalNote {
     public void setDoctorName(String doctorName) {
         this.doctorName = doctorName;
     }
+
+    @Override
+    public String toString() {
+        return "MedicalNote{" +
+                "sessionId='" + sessionId + '\'' +
+                ", patientId='" + patientId + '\'' +
+                ", doctorName='" + doctorName + '\'' +
+                ", diagnosis='" + diagnosis + '\'' +
+                ", prescription='" + prescription + '\'' +
+                ", medicalNoteUrl='" + medicalNoteUrl + '\'' +
+                ", time=" + time +
+                '}';
+    }
 }

@@ -3,8 +3,10 @@ package com.instant.doctor.fragments.Doctor;
 
 import android.app.ProgressDialog;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +24,7 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -70,6 +73,7 @@ public class PrescriptionDiagnosisFragment extends Fragment {
     private PatientInfo patientInfo;
     private DoctorInfo doctorInfo;
     ProgressDialog progressDialog;
+    public static final String TAG = "PrescriptionDiagnosis";
 
     private static Font catFont = new Font(Font.FontFamily.TIMES_ROMAN, 18,
             Font.BOLD);
@@ -142,23 +146,29 @@ public class PrescriptionDiagnosisFragment extends Fragment {
         user = FirebaseAuth.getInstance().getCurrentUser();
 
 
-
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         //create pdf,
         String filePath = createPdf();
-        long time=new Date().getTime();
-        String doctorName=doctorInfo.getName();
-        MedicalNote medicalNote = new MedicalNote(sessionId, diagnosis, prescription,time,doctorName );
+        long time = new Date().getTime();
+        String doctorName = doctorInfo.getName();
+
+        Log.d(TAG, "Name: " + user.getEmail());
+        Log.d(TAG, "File: " + filePath);
+        Log.d(TAG, "Doctor Name: " + doctorName);
+
+
+        MedicalNote medicalNote = new MedicalNote(sessionId, diagnosis, prescription, time, doctorName);
         medicalNote.setPatientId(patientInfo.getId());
-        //upload file
+
+        Log.d(TAG, "note: " + medicalNote.toString());
+//        //upload file
+
         uploadData(db, filePath, medicalNote);
 
         //delete the file
-        File file = new File(filePath);
-        file.delete();
-
-
+//        File file = new File(filePath);
+//        file.delete();
 
 
     }
@@ -176,7 +186,13 @@ public class PrescriptionDiagnosisFragment extends Fragment {
 
                         getActivity().onBackPressed();
                     }
-                });
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                progressDialog.dismiss();
+                Log.e(TAG, "Data saving failed: ", e);
+            }
+        });
     }
 
     private void uploadData(FirebaseFirestore db, String filePath, MedicalNote medicalNote) {
@@ -187,6 +203,10 @@ public class PrescriptionDiagnosisFragment extends Fragment {
         StorageReference storageRef = storage.getReference();
 
         Uri file = Uri.fromFile(new File(filePath));
+        Log.d(TAG, "uploadData File " + file.toString());
+        //
+//        return;
+
         StorageReference medicalNotesRef = storageRef.child("medicalNotes/" + file.getLastPathSegment());
         UploadTask uploadTask = medicalNotesRef.putFile(file);
         Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
@@ -205,18 +225,33 @@ public class PrescriptionDiagnosisFragment extends Fragment {
                 if (task.isSuccessful()) {
                     Uri downloadUri = task.getResult();
 
+                    Log.d(TAG, "File Upload Data Url: " + downloadUri.toString());
                     saveMedicalNote(db, medicalNote, downloadUri.toString());
-
 
 
                 } else {
                     // Handle failures
                     // ...
                     progressDialog.dismiss();
-                    Toast.makeText(getContext(), "Saving the Note Failed, Please Try again",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "Saving the Note Failed, Please Try again", Toast.LENGTH_LONG).show();
                 }
             }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG, "File Upload Failed: ", e);
+            }
         });
+
+
+    }
+
+
+    public class AsyncTaskUploadData extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            return null;
+        }
     }
 
     private String createPdf() {

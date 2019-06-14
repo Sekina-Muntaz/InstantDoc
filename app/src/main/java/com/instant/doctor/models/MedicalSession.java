@@ -20,7 +20,8 @@ public class MedicalSession {
     private String paymentId;
 
     public MedicalSession(String patient_id, String symptoms_id, String doctor_id,
-                          String doctor_name, String doctorUrl, String doctorSpecialization, String patientName, long time,String paymentId) {
+                          String doctor_name, String doctorUrl, String doctorSpecialization, String patientName,
+                          long time,String paymentId) {
         this.patient_id = patient_id;
         this.symptoms_id = symptoms_id;
         this.doctor_id = doctor_id;

@@ -11,16 +11,16 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="Payment Instructions"
+        android:textColor="@color/colorDark"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:textSize="24sp"
-        android:textColor="@color/colorDark"
-        android:text="By clicking on pay, you agree to submitting a fee of 2/= to the application,
-this  fee is is your doctor's fee"
+        android:textSize="18sp"
+        android:text="By clicking on pay, you agree to submitting a fee of Ksh 1/= to the application,
+        this  fee is is your doctor's fee\n After receiving MPESA confirmation Message Click Proceed Button"
         android:textStyle="bold" />
 
 
@@ -31,15 +31,26 @@ this  fee is is your doctor's fee"
         android:layout_gravity="center"
         android:layout_marginTop="130dp"
         android:background="@drawable/button"
-        android:text="Pay"
+        android:text="Pay via Mpesa"
         android:textColor="@color/colorPrimary" />
     <TextView
+        android:id="@+id/tv_response"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:layout_gravity="center"
-        android:text="vdgfhjjkjljkjkjmhjhjjhj"
         />
+
+    <Button
+        android:id="@+id/proceed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:enabled="false"
+        android:layout_marginTop="130dp"
+        android:background="@drawable/button"
+        android:text="Proceed"
+        android:textColor="@color/colorPrimary" />
 
 
 

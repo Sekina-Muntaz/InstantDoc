@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp">
+    <TextView
+        android:id="@+id/session"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Doctor Name :"
+        android:layout_margin="10dp"/>
+    <TextView
+        android:id="@+id/sessionNo"
+        android:layout_toRightOf="@id/session"
+        android:layout_marginStart="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"/>
+
+    <TextView
+        android:id="@+id/doc"
+        android:layout_below="@+id/session"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Date :"
+        android:layout_margin="10dp"/>
+
+    <TextView
+        android:id="@+id/docName"
+        android:layout_toRightOf="@id/doc"
+        android:layout_marginStart="5dp"
+        android:layout_below="@+id/session"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"/>
+    <TextView
+        android:id="@+id/date"
+        android:layout_below="@+id/doc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="Diagnosis :"/>
+    <TextView
+        android:id="@+id/dateValue"
+        android:layout_toRightOf="@id/date"
+        android:layout_below="@+id/docName"
+        android:layout_marginStart="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        />
+    <TextView
+        android:id="@+id/prescription"
+        android:layout_below="@+id/date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="Prescription :"/>
+    <TextView
+        android:id="@+id/prescriptionValue"
+        android:layout_toRightOf="@id/prescription"
+        android:layout_below="@+id/dateValue"
+        android:layout_marginStart="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        />
+
+
+
+
+
+</RelativeLayout>

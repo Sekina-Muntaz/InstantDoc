@@ -40,6 +40,44 @@ public class UserTypePrefManager {
         editor.apply();
     }
 
+    public void saveMerchantID(String id){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("merchant_requestId",id);
+        editor.apply();
+    }
+
+    public void deleteMerchantID(){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove("merchant_requestId");
+        editor.apply();
+    }
+
+    public String getMerchantID(){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        return sharedPreferences.getString("merchant_requestId",null);
+    }
+
+    public void saveSessionID(String id){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("session_id",id);
+        editor.apply();
+    }
+
+    public void deleteSessionID(){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove("session_id");
+        editor.apply();
+    }
+
+    public String getSessionID(){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("Settings", Context.MODE_PRIVATE);
+        return sharedPreferences.getString("session_id",null);
+    }
+
 
     public String getUserName(){
         SharedPreferences sharedPreferences = context.getSharedPreferences("Settings", Context.MODE_PRIVATE);

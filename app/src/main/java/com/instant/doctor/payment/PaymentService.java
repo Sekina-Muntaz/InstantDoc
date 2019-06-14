@@ -1,5 +1,7 @@
 package com.instant.doctor.payment;
 
+import com.instant.doctor.models.MpesaResponse;
+
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
@@ -7,5 +9,8 @@ import retrofit2.http.POST;
 public interface PaymentService {
 
     @POST("/lipanampesa")
-    Call<MyResponse> makePayment(@Body Data data);
+    Call<MpesaResponse> makePayment(@Body Data data);
+
+    @POST("/checkpayment")
+    Call<PaymentResponse> confirmPayment(@Body ConfirmPayment payment);
 }

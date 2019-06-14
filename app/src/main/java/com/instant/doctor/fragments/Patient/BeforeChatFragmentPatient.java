@@ -50,6 +50,8 @@ public class BeforeChatFragmentPatient extends Fragment  implements RequestedDoc
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        getActivity().setTitle("Requested Doctors");
+
 
         recyclerView = view.findViewById(R.id.requested_doctors);
 //        recyclerView.setHasFixedSize(true);

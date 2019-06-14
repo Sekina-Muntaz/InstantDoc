@@ -2,6 +2,7 @@ package com.instant.doctor.fragments.Doctor;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +33,7 @@ public class BeforeChatFragmentDoctor extends Fragment {
     private TextView tv_patientSymptoms;
     private Button startChatButton;
     private FirebaseFirestore db;
+    public static final String TAG =" BeforeChatDoctor";
 
 //    private PatientInfo patient;
 
@@ -116,7 +118,9 @@ public class BeforeChatFragmentDoctor extends Fragment {
                                 PatientSymptoms symptomsList = d.toObject(PatientSymptoms.class);
 
                                 List<String> symptoms = symptomsList.getSymptoms();
+
                                 String specialConditions = symptomsList.getSpecialConditions();
+                                Log.d(TAG, "onSuccess: ");
 
                                 StringBuilder symptomsString = new StringBuilder();
                                 symptomsString.append("Symptoms: \n\n");
