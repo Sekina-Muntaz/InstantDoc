@@ -117,6 +117,11 @@ public class DoctorAdapter extends RecyclerView.Adapter<DoctorAdapter.MyViewHold
         return doctorList.size();
     }
 
+    public void setDoctorList(List<DoctorInfo> doctors){
+        doctorList = doctors;
+        notifyDataSetChanged();
+    }
+
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView name, availability;
         public CircleImageView image;

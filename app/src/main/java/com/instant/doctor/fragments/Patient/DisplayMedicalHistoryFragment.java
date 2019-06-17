@@ -56,11 +56,12 @@ public class DisplayMedicalHistoryFragment extends Fragment {
 
         tv_NoMedicalHistory=view.findViewById(R.id.noNote);
 
-        DividerItemDecoration itemDecor = new DividerItemDecoration(getActivity(),DividerItemDecoration.VERTICAL);
-        recyclerView.addItemDecoration(itemDecor);
         recyclerView=view.findViewById(R.id.medical_history_recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        DividerItemDecoration itemDecor = new DividerItemDecoration(getContext(),DividerItemDecoration.VERTICAL);
+        recyclerView.addItemDecoration(itemDecor);
 //        recyclerView.addItemDecoration();
         medicalNoteList = new ArrayList<>();
         adapter = new MedicalHistoryAdapter(getActivity(),medicalNoteList);

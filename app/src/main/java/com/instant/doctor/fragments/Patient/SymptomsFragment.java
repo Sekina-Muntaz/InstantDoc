@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -44,10 +45,12 @@ public class SymptomsFragment extends Fragment {
 
     private ArrayList<String> symptomsList = new ArrayList<>();
     private EditText et_specialConditions;
+    TextView patientName;
     private Button button;
     private String doctorId;
     private String doctorName;
     private ProgressDialog progressDialog;
+    UserTypePrefManager userTypePrefManager;
 
     private DoctorInfo mDoctorInfo;
 
@@ -75,12 +78,14 @@ public class SymptomsFragment extends Fragment {
         getActivity().setTitle("Symptoms");
 
 
+        patientName=view.findViewById(R.id.patientName);
         progressDialog=new ProgressDialog(getActivity());
         progressDialog.setMessage("Saving...");
         progressDialog.setIndeterminate(true);
         progressDialog.setCancelable(false);
 
         et_specialConditions = view.findViewById(R.id.specialCondition);
+
 
         button = view.findViewById(R.id.symptoms_button);
         button.setOnClickListener(new View.OnClickListener() {
