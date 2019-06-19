@@ -74,6 +74,7 @@ public class DisplayMedicalNotesFragment extends Fragment implements MedicalNote
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        getActivity().setTitle("Medical Notes");
 
         tv_NoMedicalNote=view.findViewById(R.id.noNote);
 

@@ -19,6 +19,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.instant.doctor.fragments.Doctor.DisplayPatientFragment;
 import com.instant.doctor.fragments.Doctor.PatientStatisticsFragment;
+import com.instant.doctor.fragments.OnlineHelpFragment;
 import com.instant.doctor.fragments.Patient.BeforeChatFragmentPatient;
 import com.instant.doctor.fragments.Patient.DisplayDoctorsFragment;
 import com.instant.doctor.fragments.Patient.DisplayMedicalHistoryFragment;
@@ -172,6 +173,8 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
+
+
 //        switch (id == R.id.nav_chats) {
 //
 //            // Handle the camera action
@@ -203,6 +206,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 break;
 
+
             case R.id.nav_medicalNotes:
                 if (userTypePrefManager.getUserType() == 0) {
                     changeFragment(5);
@@ -229,6 +233,9 @@ public class MainActivity extends AppCompatActivity
                 }
 
 
+        }
+        if (id==R.id.nav_help){
+            changeFragment(8);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -301,6 +308,10 @@ public class MainActivity extends AppCompatActivity
             case 7:
                 transaction.replace(R.id.content_frame, new DisplayMedicalHistoryFragment(), "Patient History").commit();
                 break;
+
+            case 8:
+                transaction.replace(R.id.content_frame,new OnlineHelpFragment(),"online Help")
+                        .addToBackStack(null).commit();
         }
 
     }

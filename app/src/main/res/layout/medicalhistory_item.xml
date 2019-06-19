@@ -44,7 +44,7 @@
     <TextView
         android:id="@+id/diagnosis"
         android:layout_toRightOf="@id/date"
-        android:layout_below="@+id/docName"
+        android:layout_below="@+id/dateValue"
         android:layout_marginStart="5dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -76,6 +76,7 @@ public class DisplayPatientFragment extends Fragment implements PatientAdapter.O
         progressDialog.show();
         db.collection("sessions")
                 .whereEqualTo("doctor_id",doctorId)
+                .whereEqualTo("paymentId", "paid")
                 .orderBy("time", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
