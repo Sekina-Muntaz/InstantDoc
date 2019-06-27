@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:focusedByDefault="false"
-        android:hint="Search"/>
+        android:hint="Search by specialization"/>
 
 
     <androidx.recyclerview.widget.RecyclerView

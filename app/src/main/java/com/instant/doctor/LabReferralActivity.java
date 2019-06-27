@@ -1,43 +1,33 @@
-package com.instant.doctor.fragments.Doctor;
+package com.instant.doctor;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.app.ProgressDialog;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.instant.doctor.R;
 import com.instant.doctor.models.DoctorInfo;
-import com.instant.doctor.models.MedicalNote;
-import com.instant.doctor.models.MedicalSession;
+import com.instant.doctor.models.Referral;
 import com.instant.doctor.models.PatientInfo;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
@@ -58,23 +48,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.Date;
 
-public class PrescriptionDiagnosisFragment extends Fragment {
-    private EditText et_diagnosis;
-    private EditText et_prescription;
-    private TextView tv_patientname;
-    private Button save_button;
+public class LabReferralActivity extends AppCompatActivity {
 
-    private ImageButton cancel_button;
 
-    private FirebaseUser user;
-    private FirebaseFirestore db;
-
-    private String sessionId;
-    private PatientInfo patientInfo;
-    private DoctorInfo doctorInfo;
-    ProgressDialog progressDialog;
-    public static final String TAG = "PrescriptionDiagnosis";
-
+    private static final String TAG = "Referral";
     private static Font catFont = new Font(Font.FontFamily.TIMES_ROMAN, 18,
             Font.BOLD);
 
@@ -84,101 +61,94 @@ public class PrescriptionDiagnosisFragment extends Fragment {
             Font.BOLD);
 
 
-    @Nullable
+    EditText notesEt;
+    Button saveBtn;
+    ProgressDialog progressDialog;
+
+
+    private String sessionId;
+    private PatientInfo patientInfo;
+    private DoctorInfo doctorInfo;
+    private boolean isLab;
+
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.diagnosis_prescription_fragment, container, false);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_lab_referral);
 
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-
-        if (getArguments() != null) {
-            sessionId = getArguments().getString("sessionId");
-            patientInfo = (PatientInfo) getArguments().getSerializable("patient");
-            doctorInfo = (DoctorInfo) getArguments().getSerializable("doctor");
+        if (getIntent() != null) {
+            sessionId = getIntent().getStringExtra("sessionId");
+            isLab = getIntent().getBooleanExtra("isLab", false);
+            patientInfo = (PatientInfo) getIntent().getSerializableExtra("patient");
+            doctorInfo = (DoctorInfo) getIntent().getSerializableExtra("doctor");
 
         }
-        progressDialog = new ProgressDialog(getActivity());
+
+        Toolbar toolbar = findViewById(R.id.toolbar2);
+        setSupportActionBar(toolbar);
+        String title = isLab ? "Lab Referral" : "Hospital Referral";
+        getSupportActionBar().setTitle(title);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        TextView textView = findViewById(R.id.title);
+        String msg= isLab ? "Generate Lab Referral Note": "Generate Hospital Referral Note";
+        textView.setText(msg);
+
+        progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Saving ...");
         progressDialog.setIndeterminate(true);
         progressDialog.setCancelable(false);
 
+        notesEt = findViewById(R.id.ref_notes);
+        saveBtn = findViewById(R.id.save_button);
 
-
-        et_diagnosis = view.findViewById(R.id.textArea_diagnosis);
-        et_prescription = view.findViewById(R.id.textArea_prescription);
-        tv_patientname = view.findViewById(R.id.patient_name);
-        save_button = view.findViewById(R.id.diagnosis_button);
-
-        save_button.setOnClickListener(new View.OnClickListener() {
+        saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //do something
+                if (TextUtils.isEmpty(notesEt.getText().toString())) {
+                    return;
+                }
 
-                saveDiagnosis();
+                saveLabReferral();
             }
         });
 
     }
 
-
-    public void saveDiagnosis() {
-
-        String diagnosis = et_diagnosis.getText().toString();
-        String prescription = et_prescription.getText().toString();
-
-        if (TextUtils.isEmpty(diagnosis) || TextUtils.isEmpty(diagnosis)) {
-            Toast.makeText(getContext(), "Fill all the values", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-
-        user = FirebaseAuth.getInstance().getCurrentUser();
-
+    private void saveLabReferral() {
+        String notes = notesEt.getText().toString();
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         //create pdf,
         String filePath = createPdf();
-        long time = new Date().getTime();
+
         String doctorName = doctorInfo.getName();
 
-        Log.d(TAG, "Name: " + user.getEmail());
-        Log.d(TAG, "File: " + filePath);
-        Log.d(TAG, "Doctor Name: " + doctorName);
+        Referral referral = new Referral(sessionId, patientInfo.getId(), doctorName, notes, new Date().getTime());
+        if (isLab) {
+            referral.setLab(true);
+        } else {
+            referral.setLab(false);
+        }
 
-
-        MedicalNote medicalNote = new MedicalNote(sessionId, diagnosis, prescription, time, doctorName);
-        medicalNote.setPatientId(patientInfo.getId());
-
-        Log.d(TAG, "note: " + medicalNote.toString());
-//        //upload file
-
-        uploadData(db, filePath, medicalNote);
-
-        //delete the file
-//        File file = new File(filePath);
-//        file.delete();
-
+        uploadData(db, filePath, referral);
 
     }
 
-    private void saveMedicalNote(FirebaseFirestore db, MedicalNote medicalNote, String url) {
-        medicalNote.setMedicalNoteUrl(url);
-        db.collection("medicalNotes")
-                .add(medicalNote)
+
+    private void saveLabReferral(FirebaseFirestore db, Referral referral, String url) {
+        referral.setNotesUrl(url);
+        db.collection("referrals")
+                .add(referral)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
                         //Do something
                         progressDialog.dismiss();
-                        Toast.makeText(getContext(), "Medical Note Ready", Toast.LENGTH_LONG).show();
 
-                        getActivity().onBackPressed();
+                        Toast.makeText(LabReferralActivity.this, " Referral Send Successfully", Toast.LENGTH_LONG).show();
+                        finish();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -189,7 +159,7 @@ public class PrescriptionDiagnosisFragment extends Fragment {
         });
     }
 
-    private void uploadData(FirebaseFirestore db, String filePath, MedicalNote medicalNote) {
+    private void uploadData(FirebaseFirestore db, String filePath, Referral referral) {
 
         progressDialog.show();
 
@@ -197,12 +167,10 @@ public class PrescriptionDiagnosisFragment extends Fragment {
         StorageReference storageRef = storage.getReference();
 
         Uri file = Uri.fromFile(new File(filePath));
-        Log.d(TAG, "uploadData File " + file.toString());
-        //
-//        return;
 
-        StorageReference medicalNotesRef = storageRef.child("medicalNotes/" + file.getLastPathSegment());
-        UploadTask uploadTask = medicalNotesRef.putFile(file);
+
+        StorageReference labRef = storageRef.child("referrals/" + file.getLastPathSegment());
+        UploadTask uploadTask = labRef.putFile(file);
         Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
             @Override
             public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
@@ -211,7 +179,7 @@ public class PrescriptionDiagnosisFragment extends Fragment {
                 }
 
                 // Continue with the task to get the download URL
-                return medicalNotesRef.getDownloadUrl();
+                return labRef.getDownloadUrl();
             }
         }).addOnCompleteListener(new OnCompleteListener<Uri>() {
             @Override
@@ -219,15 +187,14 @@ public class PrescriptionDiagnosisFragment extends Fragment {
                 if (task.isSuccessful()) {
                     Uri downloadUri = task.getResult();
 
-                    Log.d(TAG, "File Upload Data Url: " + downloadUri.toString());
-                    saveMedicalNote(db, medicalNote, downloadUri.toString());
+                    saveLabReferral(db, referral, downloadUri.toString());
 
 
                 } else {
                     // Handle failures
                     // ...
                     progressDialog.dismiss();
-                    Toast.makeText(getContext(), "Saving the Note Failed, Please Try again", Toast.LENGTH_LONG).show();
+                    Toast.makeText(LabReferralActivity.this, "Saving the Note Failed, Please Try again", Toast.LENGTH_LONG).show();
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -241,12 +208,10 @@ public class PrescriptionDiagnosisFragment extends Fragment {
     }
 
 
-
-
     private String createPdf() {
 
-        String pdfile = "MedicalNote_" + sessionId + ".pdf";
-        File file = new File(getActivity().getCacheDir(), pdfile);
+        String pdfile = "Lab_" + sessionId + ".pdf";
+        File file = new File(getCacheDir(), pdfile);
 
         try {
 
@@ -321,13 +286,14 @@ public class PrescriptionDiagnosisFragment extends Fragment {
 
         Paragraph preface = new Paragraph();
 
-        Paragraph title = new Paragraph("Medical Note", catFont);
+        String titleSri = isLab ? "Lab Referral Notes" : "Hospital Referral";
+        Paragraph title = new Paragraph(titleSri, catFont);
         preface.add(title);
         addEmptyLine(preface, 1);
 
-        Paragraph subTile = new Paragraph("Diagnosis", smallBold);
+        Paragraph subTile = new Paragraph("Notes", smallBold);
 
-        Paragraph content = new Paragraph(et_diagnosis.getText().toString(), subFont);
+        Paragraph content = new Paragraph(notesEt.getText().toString(), subFont);
 
 
         preface.add(table);
@@ -343,12 +309,6 @@ public class PrescriptionDiagnosisFragment extends Fragment {
         preface.add(subTile);
         preface.add(content);
         addEmptyLine(new Paragraph(), 2);
-
-        subTile = new Paragraph("Prescription", smallBold);
-        content = new Paragraph(et_prescription.getText().toString(), subFont);
-        preface.add(subTile);
-        preface.add(content);
-
 
         document.add(preface);
 
@@ -371,4 +331,13 @@ public class PrescriptionDiagnosisFragment extends Fragment {
         document.addCreator("Lars Vogel");
     }
 
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

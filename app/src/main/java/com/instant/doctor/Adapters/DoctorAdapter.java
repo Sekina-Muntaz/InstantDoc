@@ -78,19 +78,25 @@ public class DoctorAdapter extends RecyclerView.Adapter<DoctorAdapter.MyViewHold
                 if (!availabilitySet) {
                     Collections.sort(times);
                     String currentTime = getCurrentTime();
+                    boolean labelSet = false;
                     for (String time : times) {
                         if (time.compareTo(currentTime) > 0) {
                             //do something
+                            labelSet = true;
                             holder.availability.setText("Next Available Time: " + time + " hrs");
                             break;
 
                         }
                     }
 
+                    if(!labelSet){
+                        holder.availability.setText("Not Available Today ");
+                    }
+
                 }
             } else {
 
-                holder.availability.setText("Not Available Today: ");
+                holder.availability.setText("Not Available Today ");
             }
         }
 

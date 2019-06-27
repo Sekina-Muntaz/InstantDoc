@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_lab_referral"
+        android:title="Lab Referral"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_hospital_referral"
+        android:title="Hospital Referral"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_medical_note"
+        android:title="Medical Note"
+        app:showAsAction="never"/>
+
+
+
+</menu>

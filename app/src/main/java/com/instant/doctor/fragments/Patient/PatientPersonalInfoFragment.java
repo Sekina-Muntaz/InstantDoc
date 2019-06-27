@@ -119,7 +119,7 @@ public class PatientPersonalInfoFragment extends Fragment {
                 newFragment.show(getFragmentManager(), "datePicker");
 //                DialogFragment dialogFragment=new SelectDatePicker();
 //                dialogFragment.show(getActivity().getSupportFragmentManager(),"Date");
-
+//
 //                setDate();
 
             }
@@ -323,22 +323,22 @@ public class PatientPersonalInfoFragment extends Fragment {
     }
 
 
-    private void setDate() {
-        PatientPersonalInfoActivity activity = (PatientPersonalInfoActivity) getActivity();
-        mDate = activity.getDateResult();
-
-        Date date = new Date(mDate);
-
-        Calendar c = Calendar.getInstance();
-        c.setTime(date);
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
-
-        String dateString = day + " / " + (month + 1) + " / " + year;
-        dobTextView.setText(dateString);
-
-    }
+//    private void setDate() {
+//        PatientPersonalInfoActivity activity = (PatientPersonalInfoActivity) getActivity();
+//        mDate = activity.getDateResult();
+//
+//        Date date = new Date(mDate);
+//
+//        Calendar c = Calendar.getInstance();
+//        c.setTime(date);
+//        int year = c.get(Calendar.YEAR);
+//        int month = c.get(Calendar.MONTH);
+//        int day = c.get(Calendar.DAY_OF_MONTH);
+//
+//        String dateString = day + " / " + (month + 1) + " / " + year;
+//        dobTextView.setText(dateString);
+//
+//    }
 
     private void savePatientInfo() {
 
@@ -417,13 +417,16 @@ public class PatientPersonalInfoFragment extends Fragment {
             dobTextView.setText(dateConverter(dayOfMonth, monthOfYear, year));
 //            startDateBtn.setText(dateConverter(dayOfMonth,monthOfYear,year));
 
+            Date d = new Date(year-1900, monthOfYear, dayOfMonth);
+            mDate = d.getTime();
+
         }
     };
 
     public String dateConverter(int day, int month, int year) {
         SimpleDateFormat dateFormatter = new SimpleDateFormat("dd-MM-yyyy");
 //        SimpleDateFormat dateFormatter=new SimpleDateFormat("dd-MM-yyyy");
-        Date d = new Date(year - 1900, month, day);
+        Date d = new Date(year-1900, month, day);
         return dateFormatter.format(d);
 
     }

@@ -10,7 +10,7 @@
             android:title="Chats" />
         <item
             android:id="@+id/nav_allDoctors"
-            android:icon="@drawable/ic_help"
+            android:icon="@drawable/ic_doctors"
             android:title="All Doctors" />
         <item
             android:id="@+id/nav_medicalHistory"
@@ -24,6 +24,14 @@
             android:id="@+id/nav_statistics"
             android:icon="@drawable/ic_statistics"
             android:title="Patient Statistics" />
+        <item
+            android:id="@+id/nav_referrals"
+            android:icon="@drawable/ic_referrals"
+            android:title="Lab Referrals" />
+        <item
+            android:id="@+id/nav_hospitalReferrals"
+            android:icon="@drawable/ic_referrals"
+            android:title="Hospital Referrals" />
         <item
             android:id="@+id/nav_help"
             android:icon="@drawable/ic_help"

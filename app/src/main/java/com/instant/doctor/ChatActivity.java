@@ -3,18 +3,30 @@ package com.instant.doctor;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -30,8 +42,12 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.instant.doctor.Adapters.ChatAdapter;
 import com.instant.doctor.fragments.Doctor.PrescriptionDiagnosisFragment;
+import com.instant.doctor.fragments.auth.UserTypeFragment;
 import com.instant.doctor.models.Chat;
 import com.instant.doctor.models.DoctorInfo;
 import com.instant.doctor.models.Message;
@@ -43,7 +59,10 @@ import com.instant.doctor.notifications.MyResponse;
 import com.instant.doctor.notifications.Sender;
 import com.instant.doctor.notifications.Token;
 import com.instant.doctor.utils.UserTypePrefManager;
+import com.nabinbhandari.android.permissions.PermissionHandler;
+import com.nabinbhandari.android.permissions.Permissions;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -65,6 +84,7 @@ import retrofit2.Response;
 
 public class ChatActivity extends AppCompatActivity {
     private static final String TAG = ChatActivity.class.getSimpleName();
+    private static final int SELECT_IMAGE = 142;
     CircleImageView profile_image;
     TextView user_name;
     FirebaseUser firebaseUser;
@@ -90,6 +110,9 @@ public class ChatActivity extends AppCompatActivity {
     boolean notify = false;
     boolean senderIsPatient;
 
+    ImageView chatImageView;
+    String imageURL;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,9 +136,7 @@ public class ChatActivity extends AppCompatActivity {
         user_name = findViewById(R.id.username);
         button_send = findViewById(R.id.button_send);
         button_attach = findViewById(R.id.button_attach);
-        if(senderIsPatient){
-            button_attach.setVisibility(View.GONE);
-        }
+//        chatImageView = findViewById(R.id.image_view);
 
         send_edit_text = findViewById(R.id.edit_text_send);
 
@@ -155,7 +176,7 @@ public class ChatActivity extends AppCompatActivity {
                     return;
                 }
 
-                sendMessage(message);
+                sendMessage(message, false);
 
             }
         });
@@ -165,27 +186,132 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                PrescriptionDiagnosisFragment newFragment = new PrescriptionDiagnosisFragment();
-                Bundle bundle = new Bundle();
-                bundle.putString("sessionId", medicalSessionId);
-                bundle.putSerializable("patient", patientInfo);
-                bundle.putSerializable("doctor", doctorInfo);
-                newFragment.setArguments(bundle);
+                String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                String rationale = "Please provide storage write permission so that you can upload your photo";
+                Permissions.Options options = new Permissions.Options()
+                        .setRationaleDialogTitle("Info")
+                        .setSettingsDialogTitle("Warning");
 
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
-//                newFragment.show(transaction, "Prescription");
+                Permissions.check(getApplicationContext()/*context*/, permissions, rationale, options, new PermissionHandler() {
+                    @Override
+                    public void onGranted() {
+                        Intent intent = new Intent();
+                        intent.setType("image/*");
+                        intent.setAction(Intent.ACTION_GET_CONTENT);
+                        startActivityForResult(Intent.createChooser(intent, "Select Image"), SELECT_IMAGE);
 
+                    }
 
-                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                // To make it fullscreen, use the 'content' root view as the container
-                // for the fragment, which is always the root view for the activity
-                transaction.add(android.R.id.content, newFragment)
-                        .addToBackStack(null).commit();
+                    @Override
+                    public void onDenied(Context context, ArrayList<String> deniedPermissions) {
+                        // permission denied, block the feature.
+                        Toast.makeText(ChatActivity.this, "Please accept this permission to proceed", Toast.LENGTH_LONG).show();
+
+                    }
+                });
             }
         });
 
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.chat_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+        }
+
+        Intent intent;
+        switch (item.getItemId()) {
+            case R.id.action_hospital_referral:
+                intent = new Intent(this, LabReferralActivity.class);
+                intent.putExtra("sessionId", medicalSessionId);
+                intent.putExtra("patient", patientInfo);
+                intent.putExtra("isLab", false);
+                intent.putExtra("doctor", doctorInfo);
+                startActivity(intent);
+                return true;
+
+            case R.id.action_lab_referral:
+                intent = new Intent(this, LabReferralActivity.class);
+                intent.putExtra("sessionId", medicalSessionId);
+                intent.putExtra("patient", patientInfo);
+                intent.putExtra("isLab", true);
+                intent.putExtra("doctor", doctorInfo);
+                startActivity(intent);
+                return true;
+
+            case R.id.action_medical_note:
+
+                intent = new Intent(this, MedicalNoteActivity.class);
+                intent.putExtra("sessionId", medicalSessionId);
+                intent.putExtra("patient", patientInfo);
+                intent.putExtra("doctor", doctorInfo);
+                startActivity(intent);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @androidx.annotation.Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == SELECT_IMAGE) {
+
+                Uri selectedImageUri = data.getData();
+                //get the path from the uri;;
+                final String path = getPathFromUri(selectedImageUri);
+
+//                setPic(path);
+//                chatImageView.setVisibility(View.VISIBLE);
+                uploadImageToStorage(path);
+
+            }
+
+        }
+    }
+
+    private void uploadImageToStorage(final String path) {
+
+        Uri file = Uri.fromFile(new File(path));
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        final StorageReference imgRef = storageRef.child("images/" + file.getLastPathSegment());
+        UploadTask uploadTask = imgRef.putFile(file);
+
+        Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            @Override
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                if (!task.isSuccessful()) {
+                    throw task.getException();
+                }
+
+                // Continue with the task to get the download URL
+                return imgRef.getDownloadUrl();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()) {
+                    Uri downloadUri = task.getResult();
+                    imageURL = downloadUri.toString();
+
+                    sendMessage(imageURL, true);
+
+                } else {
+
+                    Toast.makeText(ChatActivity.this, "Upload failed", Toast.LENGTH_LONG).show();
+
+                }
+            }
+        });
     }
 
 
@@ -194,6 +320,23 @@ public class ChatActivity extends AppCompatActivity {
         db.collection("tokens").document()
                 .set(token1);
     }
+
+    private String getPathFromUri(Uri selectedImageUri) {
+        String res = null;
+        String[] proj = {MediaStore.Images.Media.DATA};
+        Cursor cursor = getContentResolver()
+                .query(selectedImageUri, proj, null, null, null);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                res = cursor.getString(column_index);
+            }
+            cursor.close();
+        }
+
+        return res;
+    }
+
 
     private void fetchMessages() {
         if (chatId != null) {
@@ -227,9 +370,7 @@ public class ChatActivity extends AppCompatActivity {
 
                         Log.d(TAG, "messages length:" + messages.size());
                         chatAdapter.setMessages(messages);
-                        recyclerView.scrollToPosition(messages.size()-1);
-
-
+                        recyclerView.scrollToPosition(messages.size() - 1);
 
 
                     } else {
@@ -275,15 +416,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void sendMessage(final String message) {
+    private void sendMessage(final String message, boolean isImage) {
         if (chatId == null) {
             Chat chat = new Chat(medicalSessionId, new ArrayList<Message>());
             db.collection("chats")
@@ -293,21 +426,27 @@ public class ChatActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(Void aVoid) {
                             chatId = medicalSessionId;
-                            saveMessage(message);
+                            saveMessage(message, isImage);
                             fetchMessages();
                             send_edit_text.setText("");
                         }
                     });
 
         } else {
-            saveMessage(message);
+            saveMessage(message, isImage);
             send_edit_text.setText("");
         }
 
     }
 
-    private void saveMessage(String message) {
-        Message message1 = new Message(chatId, senderId, receiverId, message, new Date().getTime());
+    private void saveMessage(String message, boolean isImage) {
+
+        Message message1 = new Message(chatId, senderId, receiverId, new Date().getTime());
+        if (isImage) {
+            message1.setImageUrl(message);
+        } else {
+            message1.setMessage(message);
+        }
 
         db.collection("chats")
                 .document(medicalSessionId)
@@ -345,7 +484,7 @@ public class ChatActivity extends AppCompatActivity {
                         for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
                             Token token = snapshot.toObject(Token.class);
                             Data data = new Data(senderId, medicalSessionId,
-                                        R.mipmap.ic_launcher, username + "\n" + message,
+                                    R.mipmap.ic_launcher, username + "\n" + message,
                                     "New Message", receiver);
                             Sender sender = new Sender(data, token.getToken());
 
@@ -354,13 +493,12 @@ public class ChatActivity extends AppCompatActivity {
                                 public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
                                     if (response.code() == 200) {
                                         if (response.body().success != 1) {
-                                            Toast.makeText(ChatActivity.this, "Failed", Toast.LENGTH_LONG).show();
+                                          //  Toast.makeText(ChatActivity.this, "Failed", Toast.LENGTH_LONG).show();
 
                                         }
                                     }
 
-                                 //   Toast.makeText(ChatActivity.this, "Notification send", Toast.LENGTH_LONG).show();
-
+                                    //   Toast.makeText(ChatActivity.this, "Notification send", Toast.LENGTH_LONG).show();
 
 
                                 }
@@ -431,14 +569,11 @@ public class ChatActivity extends AppCompatActivity {
                             break;
 
 
-
                         }
 
                     }
                 }
             });
-
-
 
 
         } else {

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -76,7 +77,16 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         Message message = messageList.get(position);
-        holder.show_message.setText(message.getMessage());
+
+        if(message.getImageUrl() != null){
+            holder.imageView.setVisibility(View.VISIBLE);
+            holder.show_message.setVisibility(View.GONE);
+            Glide.with(mcontext).load(message.getImageUrl()).into(holder.imageView);
+        }else {
+            holder.imageView.setVisibility(View.GONE);
+            holder.show_message.setVisibility(View.VISIBLE);
+            holder.show_message.setText(message.getMessage());
+        }
 
         Date date = new Date(message.getTime());
         SimpleDateFormat dateFormat = new SimpleDateFormat(" hh:mm");
@@ -104,6 +114,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView show_message;
         TextView show_date;
+        ImageView imageView;
 //        public CircleImageView image;
 //        public TextView specialization;
 
@@ -112,7 +123,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
 
             show_message = itemView.findViewById(R.id.show_message);
             show_date= itemView.findViewById(R.id.show_date);
-
+            imageView = itemView.findViewById(R.id.chat_image);
         }
 
 

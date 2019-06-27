@@ -76,7 +76,6 @@ public class PatientStatisticsFragment extends Fragment {
         int totalAmount =numberOfPatients;
          String amt=String.valueOf(totalAmount);
 
-
         tv_totalAmount.setText(amt + "Ksh");
     }
 

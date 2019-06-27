@@ -6,17 +6,17 @@ public class Message {
     private String senderId;
     private String receiverId;
     private String message;
+    private String imageUrl;
     private long time;
 
 
     public Message() {
     }
 
-    public Message(String chatId, String senderId, String receiverId, String message, long time) {
+    public Message(String chatId, String senderId, String receiverId,  long time) {
         this.chatId = chatId;
         this.senderId = senderId;
         this.receiverId = receiverId;
-        this.message = message;
         this.time = time;
     }
 
@@ -70,5 +70,13 @@ public class Message {
                 ", message='" + message + '\'' +
                 ", time=" + time +
                 '}';
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

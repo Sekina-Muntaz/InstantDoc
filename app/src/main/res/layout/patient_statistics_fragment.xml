@@ -45,7 +45,7 @@
             android:layout_marginLeft="70dp"
             android:layout_marginTop="10dp"
             android:layout_toRightOf="@id/tv_numberOfPatients"
-            android:text="cscccccccccccc"
+            android:text=""
             />
         <TextView
             android:id="@+id/tv_totalAmount"
@@ -63,7 +63,8 @@
             android:layout_marginTop="10dp"
             android:layout_toRightOf="@id/tv_totalAmount"
             android:layout_below="@+id/actualNumberOfPatients"
-            android:text="cscccccccccccccc"
+            android:text=""
+
             />
 
     </RelativeLayout>

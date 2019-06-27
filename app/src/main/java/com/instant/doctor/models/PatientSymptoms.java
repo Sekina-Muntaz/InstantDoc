@@ -21,7 +21,7 @@ public class PatientSymptoms {
         return specialConditions;
     }
 
-    public void setSpecialConditions(String date) {
+    public void setSpecialConditions(String specialConditions) {
         this.specialConditions = specialConditions;
     }
 

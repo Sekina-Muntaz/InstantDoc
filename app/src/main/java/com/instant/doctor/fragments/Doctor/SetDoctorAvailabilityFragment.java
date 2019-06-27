@@ -99,10 +99,10 @@ public class SetDoctorAvailabilityFragment extends Fragment {
                 mTimes = new ArrayList<>();
                 multiSelectHours.clearCheck();
 
-
-                Toast.makeText(getActivity(), "You have selected" + specific_day, Toast.LENGTH_SHORT).show();
-
-                Log.d(TAG, "day selected: " + availableDate);
+//
+//                Toast.makeText(getActivity(), "You have selected" + specific_day, Toast.LENGTH_SHORT).show();
+//
+//                Log.d(TAG, "day selected: " + availableDate);
 
 
             }
@@ -133,7 +133,7 @@ public class SetDoctorAvailabilityFragment extends Fragment {
                             mTimes.add(availableTimes[checkedId - 1]);
                         }
 
-                        Toast.makeText(getActivity(), "YOU HAVE SELECTED" + availableTimes[checkedId - 1], Toast.LENGTH_LONG).show();
+//                        Toast.makeText(getActivity(), "YOU HAVE SELECTED" + availableTimes[checkedId - 1], Toast.LENGTH_LONG).show();
                     } else {
 
 //                        doctorAvailabilityTimes.remove(availableTimes[checkedId - 1]);
@@ -141,7 +141,7 @@ public class SetDoctorAvailabilityFragment extends Fragment {
                         mTimes.remove(availableTimes[checkedId - 1]);
 
 
-                        Toast.makeText(getActivity(), "YOU HAVE Removed" + availableTimes[checkedId - 1], Toast.LENGTH_LONG).show();
+                        //Toast.makeText(getActivity(), "YOU HAVE Removed" + availableTimes[checkedId - 1], Toast.LENGTH_LONG).show();
 
 
                     }

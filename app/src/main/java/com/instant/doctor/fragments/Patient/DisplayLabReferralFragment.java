@@ -34,26 +34,26 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.instant.doctor.Adapters.DoctorAdapter;
 import com.instant.doctor.Adapters.MedicalNotesAdapter;
+import com.instant.doctor.Adapters.ReferalNotesAdapter;
 import com.instant.doctor.R;
 import com.instant.doctor.models.MedicalNote;
-import com.instant.doctor.models.MedicalSession;
+import com.instant.doctor.models.Referral;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DisplayMedicalNotesFragment extends Fragment implements MedicalNotesAdapter.OnDownloadPressed {
-    public static final String TAG = "MedicalNotesFragment";
+public class DisplayLabReferralFragment extends Fragment implements MedicalNotesAdapter.OnDownloadPressed {
     private static final int MY_PERMISSIONS_WRITE_EXTERNAL = 209;
     private long downloadID;
-    private String mMedicalNoteDownloadUrl;
+    private String referralNoteDownloadUrl;
     private String mMedicalNoteTitle;
+    public static final String TAG = "LabReferrals";
 
 
     RecyclerView recyclerView;
-    List<MedicalNote> medicalNoteList;
-    private RecyclerView.Adapter adapter;
+    List<Referral> referralNoteList;
+    private ReferalNotesAdapter adapter;
     FirebaseFirestore db;
 
     TextView tv_NoMedicalNote;
@@ -62,82 +62,90 @@ public class DisplayMedicalNotesFragment extends Fragment implements MedicalNote
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getActivity().registerReceiver(onDownloadComplete,new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+        getActivity().registerReceiver(onDownloadComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.display_medical_notes_fragment,container,false);
-
+        return inflater.inflate(R.layout.display_medical_notes_fragment, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        getActivity().setTitle("Medical Notes");
+        getActivity().setTitle(" Your Lab Referrals");
 
-        tv_NoMedicalNote=view.findViewById(R.id.noNote);
+        tv_NoMedicalNote = view.findViewById(R.id.noNote);
 
 
         recyclerView = view.findViewById(R.id.display_medical_notes_recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-        medicalNoteList = new ArrayList<>();
-        adapter = new MedicalNotesAdapter(getActivity(),medicalNoteList, this);
-
-        recyclerView.setAdapter(adapter);
         DividerItemDecoration itemDecor = new DividerItemDecoration(getContext(),DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(itemDecor);
 
-        progressDialog=new ProgressDialog(getActivity());
+
+        referralNoteList = new ArrayList<>();
+        adapter = new ReferalNotesAdapter(getContext(), this);
+
+        recyclerView.setAdapter(adapter);
+        progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMessage("Loading ...");
         progressDialog.setIndeterminate(true);
         progressDialog.setCancelable(false);
         progressDialog.show();
 
         db = FirebaseFirestore.getInstance();
-        String patientId= FirebaseAuth.getInstance().getCurrentUser().getUid();
-        db.collection("medicalNotes")
-                .whereEqualTo("patientId",patientId)
+        String patientId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        db.collection("referrals")
+                .whereEqualTo("patientId", patientId)
+                .whereEqualTo("lab", true)
                 .orderBy("time", Query.Direction.DESCENDING)
-                .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                progressDialog.dismiss();
-                if (!queryDocumentSnapshots.isEmpty()) {
-                    List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
-                    Log.d(TAG, "data fetched: "+list.size());
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        progressDialog.dismiss();
+                        if (!queryDocumentSnapshots.isEmpty()) {
+                            List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
 
+                            Log.d(TAG, "referrals: " + list.size());
 
-                    for (DocumentSnapshot d : list) {
-                       MedicalNote notes = d.toObject(MedicalNote.class);
-                        Log.d(TAG, "Document Id: "+ d.getId());
-//                        notes.setId(d.getId());
-                        medicalNoteList.add(notes);
+                            for (DocumentSnapshot d : list) {
+                                Referral referralNotes = d.toObject(Referral.class);
+
+//
+                                referralNoteList.add(referralNotes);
+                            }
+
+                            adapter.setReferralList(referralNoteList);
+//
+                        } else {
+                            Log.d(TAG, "referrals none: ");
+                            tv_NoMedicalNote.setVisibility(View.VISIBLE);
+                        }
+
                     }
-                    adapter.notifyDataSetChanged();
-                }else {
-                    tv_NoMedicalNote.setVisibility(View.VISIBLE);
-                }
-
-            }
-        }).addOnFailureListener(new OnFailureListener() {
+                }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                progressDialog.dismiss();
-                Log.e(TAG, "data fetch failed: ",e);
+                Log.e(TAG, "onFailure: ", e);
+//                progressDialog.dismiss();
+
             }
         });
+
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
         getActivity().unregisterReceiver(onDownloadComplete);
     }
 
-    private void startDownload(String url, String medicalNote) {
+    private void startDownload(String url, String referralNote) {
 
         //request permissions;;
         if (requestWritePermission()) {
@@ -149,25 +157,38 @@ public class DisplayMedicalNotesFragment extends Fragment implements MedicalNote
             DownloadManager.Request request = new DownloadManager.Request(download_Uri);
             request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
             request.setAllowedOverRoaming(false);
-            request.setTitle("Downloading Medical Note");
-            request.setDescription("Download of " + medicalNote +" in progress...");
+            request.setTitle("Downloading Referral Note");
+            request.setDescription("Download of " + referralNote + " in progress...");
             request.setVisibleInDownloadsUi(true);
-            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "/medical_notes/"+ medicalNote+".pdf");
+            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "/referral_notes/" + referralNote + ".pdf");
 
             downloadID = downloadManager.enqueue(request);
 
         }
     }
-//    @Override
-//    public void onstartDownload(String url, String medicalNoteName) {
 //
-//        mMedicalNoteDownloadUrl = RetrofitClient.BASE_URL + "/files/books/" + url;
-//        mMedicalNoteTitle = medicalNoteName;
-//        //  Toast.makeText(getActivity(), "Starting download "+mRecipeDownloadUrl,Toast.LENGTH_LONG).show();
+//    private void startDownload(String url, String referralNote) {
+//
+//        //request permissions;;
+//        if (requestWritePermission()) {
 //
 //
-//        startDownload(mMedicalNoteDownloadUrl, medicalNoteName);
+//            DownloadManager downloadManager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
+//            Uri download_Uri = Uri.parse(url);
+//
+//            DownloadManager.Request request = new DownloadManager.Request(download_Uri);
+//            request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
+//            request.setAllowedOverRoaming(false);
+//            request.setTitle("Downloading Referral Note");
+//            request.setDescription("Download of " + referralNote +" in progress...");
+//            request.setVisibleInDownloadsUi(true);
+//            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "/referral_notes/"+ referralNote+".pdf");
+//
+//            downloadID = downloadManager.enqueue(request);
+//
+//        }
 //    }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
@@ -179,8 +200,8 @@ public class DisplayMedicalNotesFragment extends Fragment implements MedicalNote
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
-                    if (mMedicalNoteDownloadUrl != null) {
-                        startDownload(mMedicalNoteDownloadUrl, "Medical Note");
+                    if (referralNoteDownloadUrl != null) {
+                        startDownload(referralNoteDownloadUrl, "Lab Referral Note");
                     }
                 } else {
                     // permission denied, boo! Disable the
@@ -218,14 +239,17 @@ public class DisplayMedicalNotesFragment extends Fragment implements MedicalNote
             long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
             //Checking if the received broadcast is for our enqueued download by matching download id
             if (downloadID == id) {
-                Toast.makeText(getActivity(), "Download Completed", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Lab Referral Download Completed", Toast.LENGTH_LONG).show();
             }
         }
     };
 
     @Override
     public void startDownload(String url) {
-        mMedicalNoteDownloadUrl = url;
-       startDownload(mMedicalNoteDownloadUrl, "Medical Note");
+        referralNoteDownloadUrl = url;
+        Toast.makeText(getActivity(), referralNoteDownloadUrl, Toast.LENGTH_LONG).show();
+        startDownload(referralNoteDownloadUrl, "Lab Referral Note");
+
     }
 }
+

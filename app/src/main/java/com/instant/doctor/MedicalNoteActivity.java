@@ -1,13 +1,15 @@
-package com.instant.doctor.fragments.Doctor;
+package com.instant.doctor;
 
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -15,11 +17,11 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.Continuation;
@@ -34,10 +36,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.instant.doctor.R;
 import com.instant.doctor.models.DoctorInfo;
 import com.instant.doctor.models.MedicalNote;
-import com.instant.doctor.models.MedicalSession;
 import com.instant.doctor.models.PatientInfo;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
@@ -56,9 +56,10 @@ import com.itextpdf.text.pdf.draw.LineSeparator;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.Serializable;
 import java.util.Date;
 
-public class PrescriptionDiagnosisFragment extends Fragment {
+public class MedicalNoteActivity extends AppCompatActivity {
     private EditText et_diagnosis;
     private EditText et_prescription;
     private TextView tv_patientname;
@@ -72,6 +73,7 @@ public class PrescriptionDiagnosisFragment extends Fragment {
     private String sessionId;
     private PatientInfo patientInfo;
     private DoctorInfo doctorInfo;
+
     ProgressDialog progressDialog;
     public static final String TAG = "PrescriptionDiagnosis";
 
@@ -84,35 +86,36 @@ public class PrescriptionDiagnosisFragment extends Fragment {
             Font.BOLD);
 
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.diagnosis_prescription_fragment, container, false);
-
-    }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.diagnosis_prescription_fragment);
+
+        Toolbar toolbar = findViewById(R.id.toolbar2);
+        setSupportActionBar(toolbar);
 
 
-        if (getArguments() != null) {
-            sessionId = getArguments().getString("sessionId");
-            patientInfo = (PatientInfo) getArguments().getSerializable("patient");
-            doctorInfo = (DoctorInfo) getArguments().getSerializable("doctor");
+        getSupportActionBar().setTitle("Medical Note");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
+        if (getIntent().hasExtra("sessionId")) {
+            sessionId = getIntent().getStringExtra("sessionId");
+            patientInfo = (PatientInfo) getIntent().getSerializableExtra("patient");
+            doctorInfo = (DoctorInfo) getIntent().getSerializableExtra("doctor");
 
         }
-        progressDialog = new ProgressDialog(getActivity());
+        progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Saving ...");
         progressDialog.setIndeterminate(true);
         progressDialog.setCancelable(false);
 
 
-
-        et_diagnosis = view.findViewById(R.id.textArea_diagnosis);
-        et_prescription = view.findViewById(R.id.textArea_prescription);
-        tv_patientname = view.findViewById(R.id.patient_name);
-        save_button = view.findViewById(R.id.diagnosis_button);
+        et_diagnosis = findViewById(R.id.textArea_diagnosis);
+        et_prescription = findViewById(R.id.textArea_prescription);
+        tv_patientname = findViewById(R.id.patient_name);
+        save_button = findViewById(R.id.diagnosis_button);
 
         save_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,9 +125,17 @@ public class PrescriptionDiagnosisFragment extends Fragment {
                 saveDiagnosis();
             }
         });
-
     }
 
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home){
+            onBackPressed();
+            return  true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     public void saveDiagnosis() {
 
@@ -132,7 +143,7 @@ public class PrescriptionDiagnosisFragment extends Fragment {
         String prescription = et_prescription.getText().toString();
 
         if (TextUtils.isEmpty(diagnosis) || TextUtils.isEmpty(diagnosis)) {
-            Toast.makeText(getContext(), "Fill all the values", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Fill all the values", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -147,22 +158,17 @@ public class PrescriptionDiagnosisFragment extends Fragment {
         long time = new Date().getTime();
         String doctorName = doctorInfo.getName();
 
-        Log.d(TAG, "Name: " + user.getEmail());
-        Log.d(TAG, "File: " + filePath);
-        Log.d(TAG, "Doctor Name: " + doctorName);
 
 
         MedicalNote medicalNote = new MedicalNote(sessionId, diagnosis, prescription, time, doctorName);
         medicalNote.setPatientId(patientInfo.getId());
 
-        Log.d(TAG, "note: " + medicalNote.toString());
-//        //upload file
 
         uploadData(db, filePath, medicalNote);
 
         //delete the file
-//        File file = new File(filePath);
-//        file.delete();
+        File file = new File(filePath);
+        file.delete();
 
 
     }
@@ -176,9 +182,8 @@ public class PrescriptionDiagnosisFragment extends Fragment {
                     public void onSuccess(DocumentReference documentReference) {
                         //Do something
                         progressDialog.dismiss();
-                        Toast.makeText(getContext(), "Medical Note Ready", Toast.LENGTH_LONG).show();
-
-                        getActivity().onBackPressed();
+                        Toast.makeText(MedicalNoteActivity.this, "Medical Note Ready", Toast.LENGTH_LONG).show();
+                        finish();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -227,7 +232,7 @@ public class PrescriptionDiagnosisFragment extends Fragment {
                     // Handle failures
                     // ...
                     progressDialog.dismiss();
-                    Toast.makeText(getContext(), "Saving the Note Failed, Please Try again", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MedicalNoteActivity.this, "Saving the Note Failed, Please Try again", Toast.LENGTH_LONG).show();
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -246,7 +251,7 @@ public class PrescriptionDiagnosisFragment extends Fragment {
     private String createPdf() {
 
         String pdfile = "MedicalNote_" + sessionId + ".pdf";
-        File file = new File(getActivity().getCacheDir(), pdfile);
+        File file = new File(getCacheDir(), pdfile);
 
         try {
 

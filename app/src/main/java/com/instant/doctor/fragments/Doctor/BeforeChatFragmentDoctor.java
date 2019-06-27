@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -33,7 +34,7 @@ public class BeforeChatFragmentDoctor extends Fragment {
     private TextView tv_patientSymptoms;
     private Button startChatButton;
     private FirebaseFirestore db;
-    public static final String TAG =" BeforeChatDoctor";
+    public static final String TAG = " BeforeChatDoctor";
 
 //    private PatientInfo patient;
 
@@ -51,8 +52,6 @@ public class BeforeChatFragmentDoctor extends Fragment {
         tv_patientInfo = view.findViewById(R.id.patient_personal_info);
         tv_patientSymptoms = view.findViewById(R.id.patient_symptoms);
         startChatButton = view.findViewById(R.id.Start_chat_button);
-
-
 
 
         String doctorId = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -85,6 +84,7 @@ public class BeforeChatFragmentDoctor extends Fragment {
                                 PatientInfo patient = d.toObject(PatientInfo.class);
 
                                 Date dob = new Date(patient.getDate());
+                                Log.d(TAG, "date"+ dob);
                                 Date currentDate = new Date();
                                 int age = currentDate.getYear() - dob.getYear();
                                 StringBuilder patientStringInfo = new StringBuilder();
@@ -103,40 +103,51 @@ public class BeforeChatFragmentDoctor extends Fragment {
                     }
                 });
 
-
-        db.collection("Symptoms")
-                .whereEqualTo("patientId", patientId)
+        db.collection("sessions").document(sessionId)
                 .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
 
-                        if (!queryDocumentSnapshots.isEmpty()) {
-                            List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
+                        MedicalSession session = documentSnapshot.toObject(MedicalSession.class);
 
-                            for (DocumentSnapshot d : list) {
-                                PatientSymptoms symptomsList = d.toObject(PatientSymptoms.class);
+                        if (session != null) {
 
-                                List<String> symptoms = symptomsList.getSymptoms();
+                            db.collection("Symptoms")
+                                    .document(session.getSymptoms_id())
+                                    .get()
+                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            PatientSymptoms symptomsList = documentSnapshot.toObject(PatientSymptoms.class);
 
-                                String specialConditions = symptomsList.getSpecialConditions();
-                                Log.d(TAG, "onSuccess: ");
+                                            List<String> symptoms = symptomsList.getSymptoms();
 
-                                StringBuilder symptomsString = new StringBuilder();
-                                symptomsString.append("Symptoms: \n\n");
-                                for (String symptom : symptoms) {
-                                    symptomsString.append(symptom);
-                                    symptomsString.append("\n");
-                                }
-                                symptomsString.append("\n\n");
-                                symptomsString.append("Special Conditions \n\n");
-                                symptomsString.append(specialConditions);
+                                            String specialConditions = symptomsList.getSpecialConditions();
+                                            Log.d(TAG, "Special Conditions: " + specialConditions);
 
-                                tv_patientSymptoms.setText(symptomsString.toString());
+                                            StringBuilder symptomsString = new StringBuilder();
+                                            symptomsString.append("Symptoms: \n\n");
+                                            for (String symptom : symptoms) {
+                                                symptomsString.append(symptom);
+                                                symptomsString.append("\n");
+                                            }
+                                            symptomsString.append("\n\n");
+                                            symptomsString.append("Special Conditions \n\n");
+                                            symptomsString.append(specialConditions);
 
-                            }
+                                            tv_patientSymptoms.setText(symptomsString.toString());
+
+                                        }
+                                    });
 
                         }
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
 
                     }
                 });

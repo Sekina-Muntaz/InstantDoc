@@ -45,6 +45,13 @@
 
     </androidx.recyclerview.widget.RecyclerView>
 
+    <!--<ImageView-->
+        <!--android:id="@+id/image_view"-->
+        <!--android:layout_above="@id/bottom"-->
+        <!--android:visibility="gone"-->
+        <!--android:layout_width="200dp"-->
+        <!--android:layout_height="200dp" />-->
+
 
     <RelativeLayout
         android:layout_width="match_parent"

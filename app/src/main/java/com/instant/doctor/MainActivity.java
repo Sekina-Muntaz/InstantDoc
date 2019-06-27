@@ -22,8 +22,10 @@ import com.instant.doctor.fragments.Doctor.PatientStatisticsFragment;
 import com.instant.doctor.fragments.OnlineHelpFragment;
 import com.instant.doctor.fragments.Patient.BeforeChatFragmentPatient;
 import com.instant.doctor.fragments.Patient.DisplayDoctorsFragment;
+import com.instant.doctor.fragments.Patient.DisplayHospitalReferralFragment;
 import com.instant.doctor.fragments.Patient.DisplayMedicalHistoryFragment;
 import com.instant.doctor.fragments.Patient.DisplayMedicalNotesFragment;
+import com.instant.doctor.fragments.Patient.DisplayLabReferralFragment;
 import com.instant.doctor.models.DoctorInfo;
 import com.instant.doctor.models.PatientInfo;
 import com.instant.doctor.utils.UserTypePrefManager;
@@ -97,6 +99,9 @@ public class MainActivity extends AppCompatActivity
         MenuItem medicalNotes = navigationView.getMenu().findItem(R.id.nav_medicalNotes);
         MenuItem docStatistics = navigationView.getMenu().findItem(R.id.nav_statistics);
         MenuItem allDoctors = navigationView.getMenu().findItem(R.id.nav_allDoctors);
+        MenuItem referrals=navigationView.getMenu().findItem(R.id.nav_referrals);
+        MenuItem hospitalreferrals=navigationView.getMenu().findItem(R.id.nav_hospitalReferrals);
+        MenuItem medicalHistory=navigationView.getMenu().findItem(R.id.nav_medicalHistory);
 
         UserTypePrefManager userTypePrefManager =new UserTypePrefManager(getApplicationContext());
         switch (userTypePrefManager.getUserType()) {
@@ -115,6 +120,9 @@ public class MainActivity extends AppCompatActivity
 //                nav_user_name.setText(doctorInfo.getName());
                 medicalNotes.setVisible(false);
                 allDoctors.setVisible(false);
+                referrals.setVisible(false);
+                hospitalreferrals.setVisible(false);
+                medicalHistory.setVisible(false);
 //                docStatistics.setVisible(true);
                 break;
 
@@ -174,23 +182,6 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
 
-
-//        switch (id == R.id.nav_chats) {
-//
-//            // Handle the camera action
-//        } else if (id == R.id.nav_gallery) {
-//
-//        } else if (id == R.id.nav_slideshow) {
-//
-//        } else if (id == R.id.nav_manage) {
-//
-//        } else if (id == R.id.nav_share) {
-//
-//        } else if (id == R.id.nav_send) {
-//
-//        }
-
-
         navDrawerItemSelected = true;
         final UserTypePrefManager userTypePrefManager = new UserTypePrefManager(this);
         switch (id) {
@@ -231,6 +222,18 @@ public class MainActivity extends AppCompatActivity
                 if (userTypePrefManager.getUserType()==0){
                     changeFragment(7);
                 }
+                break;
+            case R.id.nav_referrals:
+                if (userTypePrefManager.getUserType()==0){
+                    changeFragment(9);
+                }
+                break;
+            case R.id.nav_hospitalReferrals:
+                if (userTypePrefManager.getUserType()==0){
+                    changeFragment(10);
+                }
+                break;
+
 
 
         }
@@ -312,6 +315,15 @@ public class MainActivity extends AppCompatActivity
             case 8:
                 transaction.replace(R.id.content_frame,new OnlineHelpFragment(),"online Help")
                         .addToBackStack(null).commit();
+                break;
+
+            case 9:
+                transaction.replace(R.id.content_frame,new DisplayLabReferralFragment(),"Referral Notes").commit();
+                break;
+
+            case 10:
+                transaction.replace(R.id.content_frame,new DisplayHospitalReferralFragment(),"hospital Notes").commit();
+                break;
         }
 
     }

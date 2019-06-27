@@ -17,8 +17,9 @@
         android:layout_width="wrap_content"
         android:id="@+id/noNote"
         android:layout_height="wrap_content"
-        android:text="No medical Notes Yet!"
+        android:text="No Notes Yet!"
         android:textColor="@color/colorPrimary"
+        android:layout_gravity="center"
         android:visibility="gone"/>
     <!--<TextView-->
         <!--android:id="@+id/tv_nopatient_data"-->

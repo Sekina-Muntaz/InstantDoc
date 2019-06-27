@@ -4,21 +4,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/app_bg"
+    android:weightSum="1"
     android:orientation="vertical"
    >
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.1"
+        android:layout_height="0dp"
+        android:layout_weight="0.5"
         android:background="@drawable/bg_logo">
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.9"
+        android:layout_height="0dp"
+        android:layout_weight="0.5"
         android:orientation="vertical">
 
         <Button

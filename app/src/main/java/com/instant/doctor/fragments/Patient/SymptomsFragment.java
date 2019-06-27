@@ -124,7 +124,7 @@ public class SymptomsFragment extends Fragment {
 
     public void savePatientSymptoms() {
         String aCondition = et_specialConditions.getText().toString();
-        Toast.makeText(getActivity(),"Your symptoms" +aCondition,Toast.LENGTH_LONG).show();
+//        Toast.makeText(getActivity(),"Your symptoms" +aCondition,Toast.LENGTH_LONG).show();
 
         final UserTypePrefManager manager = new UserTypePrefManager(getActivity());
         String patientId = FirebaseAuth.getInstance().getCurrentUser().getUid();
